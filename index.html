@@ -70,6 +70,47 @@
     #rpg-continue{position:absolute;bottom:8px;right:14px;font-family:'Press Start 2P',monospace;font-size:7px;color:#8b6914;animation:rpg-blink 1s step-end infinite;letter-spacing:1px}
     @keyframes rpg-blink{0%,100%{opacity:1}50%{opacity:0}}
     #rpg-dialog:hover{cursor:pointer}
+
+    /* ─── MODULE BOOK ─── */
+    #module-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.75);z-index:7000;display:none;align-items:center;justify-content:center;opacity:0;transition:opacity .5s;backdrop-filter:blur(6px)}
+    #module-overlay.visible{opacity:1}
+    #module-book{display:flex;width:94%;max-width:1100px;height:84vh;max-height:720px;border-radius:6px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.6),0 0 0 2px #5a4a2a;position:relative}
+    #module-spine{width:28px;background:linear-gradient(90deg,#6b5530,#8b7340,#6b5530);flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;box-shadow:inset -2px 0 6px rgba(0,0,0,.3),inset 2px 0 6px rgba(0,0,0,.3)}
+    #module-spine span{width:14px;height:4px;background:#4a3a1a;border-radius:2px;box-shadow:0 1px 0 #9a8a5a}
+    .mod-page{flex:1;overflow-y:auto;position:relative;background:linear-gradient(135deg,#f5e6c8,#efe0c0,#e8d5aa)}
+    .mod-page:first-of-type{border-right:1px solid #d4c090}
+    .mod-page::-webkit-scrollbar{width:6px}
+    .mod-page::-webkit-scrollbar-thumb{background:#c4a86a;border-radius:3px}
+    .mod-spread{display:none;width:100%;height:100%}
+    .mod-spread.active{display:flex}
+    .mod-spread .mod-page{padding:28px 24px}
+    .mod-page h2{font-family:'Press Start 2P',monospace;font-size:12px;color:#3a2a10;margin-bottom:14px;letter-spacing:2px;border-bottom:2px dashed #c4a86a;padding-bottom:10px}
+    .mod-page h3{font-family:'Press Start 2P',monospace;font-size:9px;color:#5a4a2a;margin:18px 0 8px;letter-spacing:1px}
+    .mod-page p{font-family:'Press Start 2P',monospace;font-size:7px;color:#4a3a1a;line-height:2.2;letter-spacing:.3px}
+    .mod-page ul{list-style:none;padding:0}
+    .mod-page li{font-family:'Press Start 2P',monospace;font-size:7px;color:#4a3a1a;line-height:2.2}
+    .mod-page li::before{content:'▸ ';color:#8b6914}
+    .mod-avatar-frame{width:140px;height:140px;margin:0 auto 16px;border:4px solid #5a4a2a;border-radius:8px;background:linear-gradient(135deg,#e8d5aa,#dcc898);display:flex;align-items:center;justify-content:center;box-shadow:inset 0 2px 8px rgba(0,0,0,.15),0 4px 12px rgba(0,0,0,.2)}
+    .mod-avatar-frame img{width:110px;height:110px;object-fit:contain}
+    .mod-media-placeholder{width:100%;height:140px;border:2px dashed #c4a86a;border-radius:6px;display:flex;align-items:center;justify-content:center;margin:12px 0;background:rgba(255,255,255,.2);cursor:pointer;transition:background .2s}
+    .mod-media-placeholder:hover{background:rgba(255,255,255,.4)}
+    .mod-media-placeholder span{font-family:'Press Start 2P',monospace;font-size:7px;color:#8a7a5a;text-align:center;line-height:2}
+    .mod-media-placeholder img,.mod-media-placeholder video{width:100%;height:100%;object-fit:cover;border-radius:4px}
+    .mod-video-placeholder{height:180px}
+    .mod-concept-card{background:rgba(255,255,255,.35);border:1px solid #c4a86a;border-left:4px solid #455A64;border-radius:4px;padding:12px 14px;margin:10px 0}
+    .mod-concept-card h4{font-family:'Press Start 2P',monospace;font-size:8px;color:#3a2a10;margin-bottom:6px;letter-spacing:1px}
+    .mod-concept-card p{font-size:6.5px;margin:0}
+    .mod-stamp{display:inline-block;border:3px solid #455A64;color:#455A64;font-family:'Press Start 2P',monospace;font-size:8px;padding:8px 14px;transform:rotate(-3deg);letter-spacing:2px;border-radius:3px;opacity:.7}
+    .mod-divider{border:none;border-top:1px dashed #c4a86a;margin:16px 0}
+    #module-close{position:absolute;top:12px;right:16px;background:#8b2020;color:#f5e6c8;border:2px solid #6b1010;font-family:'Press Start 2P',monospace;font-size:8px;padding:8px 16px;cursor:pointer;border-radius:3px;letter-spacing:1px;z-index:10;transition:background .2s,transform .2s}
+    #module-close:hover{background:#a52a2a;transform:scale(1.05)}
+    .mod-nav{position:absolute;bottom:14px;width:calc(100% - 28px);display:flex;justify-content:space-between;padding:0 20px;pointer-events:none;right:0}
+    .mod-nav button{pointer-events:auto;background:#5a4a2a;color:#f5e6c8;border:2px solid #3a2a10;font-family:'Press Start 2P',monospace;font-size:7px;padding:8px 18px;cursor:pointer;border-radius:3px;letter-spacing:1px;transition:background .2s,transform .15s}
+    .mod-nav button:hover{background:#8b7340;transform:scale(1.05)}
+    .mod-nav button:disabled{opacity:.3;cursor:default;transform:none}
+    .mod-page-num{font-family:'Press Start 2P',monospace;font-size:6px;color:#8a7a5a;text-align:center;margin-top:16px;letter-spacing:2px}
+    .mod-interactive-zone{width:100%;min-height:250px;border:2px solid #455A64;border-radius:8px;background:rgba(69,90,100,.08);display:flex;align-items:center;justify-content:center;margin:14px 0}
+    .mod-interactive-zone span{font-family:'Press Start 2P',monospace;font-size:8px;color:#455A64;letter-spacing:1px}
   </style>
 </head>
 <body>
@@ -193,6 +234,195 @@
       <div style="text-align:center">
         <div class="nb-stamp" style="transform:rotate(2deg)">7 INGENIERÍAS</div>
       </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODULE BOOK: INDUSTRIAL ENGINEERING -->
+<div id="module-overlay">
+  <div id="module-book">
+    <button id="module-close">✕ CERRAR</button>
+
+    <!-- SPREAD 1: WELCOME -->
+    <div class="mod-spread active" data-spread="0">
+      <div class="mod-page">
+        <div class="mod-avatar-frame">
+          <img src="static/img/avatars/industrial.png" alt="Ing. Industrial">
+        </div>
+        <h2>¡BIENVENIDO!</h2>
+        <p>Has elegido explorar la <strong>Ingeniería Industrial</strong>, una de las carreras más versátiles y demandadas del mundo moderno.</p>
+
+        <hr class="mod-divider">
+
+        <h3>🏭 ¿QUÉ ES?</h3>
+        <p>La Ingeniería Industrial se encarga de optimizar sistemas complejos que integran personas, materiales, equipos, energía e información para crear productos y servicios de forma eficiente.</p>
+
+        <hr class="mod-divider">
+
+        <h3>🌍 ROL EN LA SOCIEDAD</h3>
+        <p>El ingeniero industrial es el puente entre la tecnología y la gestión. Diseña procesos que reducen costos, mejoran la calidad y hacen que las organizaciones funcionen mejor — desde hospitales hasta fábricas, bancos y startups.</p>
+
+        <div class="mod-page-num">— PÁGINA 1 —</div>
+      </div>
+
+      <div id="module-spine">
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+
+      <div class="mod-page">
+        <h2>LA CARRERA</h2>
+
+        <h3>📋 LÍNEAS PROFESIONALES</h3>
+        <ul>
+          <li>Gestión de operaciones y logística</li>
+          <li>Control y aseguramiento de calidad</li>
+          <li>Ingeniería de métodos y tiempos</li>
+          <li>Gestión de la cadena de suministro</li>
+          <li>Consultoría organizacional</li>
+          <li>Análisis de datos e inteligencia de negocios</li>
+          <li>Gestión de proyectos (PMI/Scrum)</li>
+        </ul>
+
+        <hr class="mod-divider">
+
+        <h3>🎥 VIDEO INTRODUCTORIO</h3>
+        <div class="mod-media-placeholder mod-video-placeholder" data-media="video-intro">
+          <span>📹 VIDEO: ¿Qué hace un<br>ingeniero industrial?<br><br>[ Inserta URL del video ]</span>
+        </div>
+
+        <hr class="mod-divider">
+
+        <h3>📸 GALERÍA</h3>
+        <div class="mod-media-placeholder" data-media="img-gallery-1">
+          <span>🖼️ IMAGEN: Campus / Laboratorio<br>[ Inserta ruta de imagen ]</span>
+        </div>
+
+        <div class="mod-page-num">— PÁGINA 2 —</div>
+      </div>
+    </div>
+
+    <!-- SPREAD 2: CONCEPTOS FUNDAMENTALES -->
+    <div class="mod-spread" data-spread="1">
+      <div class="mod-page">
+        <h2>CONCEPTOS CLAVE</h2>
+        <p>Estos son algunos de los fundamentos que todo aspirante a Ingeniería Industrial debe conocer:</p>
+
+        <div class="mod-concept-card">
+          <h4>📊 PRODUCTIVIDAD</h4>
+          <p>Es la relación entre los resultados obtenidos y los recursos utilizados. Maximizar la productividad es el corazón de la ingeniería industrial.</p>
+        </div>
+
+        <div class="mod-concept-card">
+          <h4>📈 MEJORA CONTINUA (KAIZEN)</h4>
+          <p>Filosofía que busca pequeñas mejoras constantes en todos los procesos. Cada día un poco mejor que ayer.</p>
+        </div>
+
+        <div class="mod-concept-card">
+          <h4>🔄 LEAN MANUFACTURING</h4>
+          <p>Sistema de producción que elimina desperdicios (sobreproducción, esperas, transporte innecesario) para crear máximo valor con mínimos recursos.</p>
+        </div>
+
+        <hr class="mod-divider">
+        <div class="mod-media-placeholder" data-media="img-concepts-1">
+          <span>🖼️ IMAGEN: Diagrama de Flujo<br>o Mapa de Procesos<br>[ Inserta ruta de imagen ]</span>
+        </div>
+
+        <div class="mod-page-num">— PÁGINA 3 —</div>
+      </div>
+
+      <div id="module-spine">
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+
+      <div class="mod-page">
+        <h3>⚙️ MÁS CONCEPTOS</h3>
+
+        <div class="mod-concept-card">
+          <h4>📦 CADENA DE SUMINISTRO</h4>
+          <p>Red de organizaciones involucradas en producir y entregar un producto al consumidor final. Desde la materia prima hasta tu puerta.</p>
+        </div>
+
+        <div class="mod-concept-card">
+          <h4>📐 ESTUDIO DE TIEMPOS Y MOVIMIENTOS</h4>
+          <p>Técnica para analizar y optimizar cómo se realiza un trabajo. Cada segundo cuenta en una línea de producción.</p>
+        </div>
+
+        <div class="mod-concept-card">
+          <h4>🎯 SIX SIGMA</h4>
+          <p>Metodología que busca reducir defectos a casi cero (3.4 por millón). Usa datos y estadística para tomar decisiones.</p>
+        </div>
+
+        <hr class="mod-divider">
+
+        <h3>📹 VIDEO RECOMENDADO</h3>
+        <div class="mod-media-placeholder mod-video-placeholder" data-media="video-concepts">
+          <span>📹 VIDEO: Lean Manufacturing<br>explicado en 5 minutos<br><br>[ Inserta URL del video ]</span>
+        </div>
+
+        <hr class="mod-divider">
+        <div class="mod-media-placeholder" data-media="img-concepts-2">
+          <span>🖼️ IMAGEN: Diagrama Ishikawa<br>o las 5S<br>[ Inserta ruta de imagen ]</span>
+        </div>
+
+        <div class="mod-page-num">— PÁGINA 4 —</div>
+      </div>
+    </div>
+
+    <!-- SPREAD 3: SECCIÓN INTERACTIVA -->
+    <div class="mod-spread" data-spread="2">
+      <div class="mod-page">
+        <h2>🧩 ZONA INTERACTIVA</h2>
+        <p>¡Es hora de poner a prueba lo que aprendiste! En esta sección encontrarás un minijuego donde podrás aplicar los conceptos de la ingeniería industrial.</p>
+
+        <hr class="mod-divider">
+
+        <h3>🎮 MINIJUEGO</h3>
+        <div class="mod-interactive-zone">
+          <span>🚧 PRÓXIMAMENTE 🚧<br>Minijuego de Ing. Industrial</span>
+        </div>
+
+        <div class="mod-page-num">— PÁGINA 5 —</div>
+      </div>
+
+      <div id="module-spine">
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+
+      <div class="mod-page">
+        <h2>📝 RESUMEN</h2>
+        <p>La Ingeniería Industrial es para ti si:</p>
+        <ul>
+          <li>Te gusta resolver problemas y optimizar</li>
+          <li>Disfrutas organizar y planificar</li>
+          <li>Te interesa la tecnología Y los negocios</li>
+          <li>Quieres trabajar en cualquier industria</li>
+          <li>Te motiva mejorar las cosas cada día</li>
+        </ul>
+
+        <hr class="mod-divider">
+
+        <h3>📊 DATO CURIOSO</h3>
+        <p>El 85% de los ingenieros industriales consiguen empleo antes de graduarse. ¡Es una de las carreras con mayor empleabilidad!</p>
+
+        <hr class="mod-divider">
+
+        <div style="text-align:center;margin-top:20px">
+          <div class="mod-stamp">ING. INDUSTRIAL</div>
+          <p style="margin-top:14px;font-size:6px!important;color:#8a7a5a">UNIVERSIDAD DE AMÉRICA · FACULTAD DE INGENIERÍAS</p>
+        </div>
+
+        <div class="mod-page-num">— PÁGINA 6 —</div>
+      </div>
+    </div>
+
+    <!-- NAVIGATION -->
+    <div class="mod-nav">
+      <button id="mod-prev" disabled>◀ ANTERIOR</button>
+      <button id="mod-next">SIGUIENTE ▶</button>
     </div>
 
   </div>
@@ -1050,6 +1280,66 @@ document.getElementById('notebook-close').addEventListener('click', function() {
     nb.style.display = 'none';
     startRPGDialog();
   }, 700);
+});
+
+// ─── MODULE BOOK SYSTEM ───────────────────────────────────
+var modCurrentSpread = 0;
+var modSpreads = document.querySelectorAll('.mod-spread');
+var modTotalSpreads = modSpreads.length;
+
+function modUpdateNav() {
+  document.getElementById('mod-prev').disabled = (modCurrentSpread === 0);
+  document.getElementById('mod-next').disabled = (modCurrentSpread === modTotalSpreads - 1);
+}
+
+function modGoTo(idx) {
+  modSpreads.forEach(function(s) { s.classList.remove('active'); });
+  modSpreads[idx].classList.add('active');
+  modCurrentSpread = idx;
+  modUpdateNav();
+  // Scroll pages to top
+  modSpreads[idx].querySelectorAll('.mod-page').forEach(function(p) { p.scrollTop = 0; });
+}
+
+document.getElementById('mod-prev').addEventListener('click', function() {
+  if (modCurrentSpread > 0) modGoTo(modCurrentSpread - 1);
+});
+
+document.getElementById('mod-next').addEventListener('click', function() {
+  if (modCurrentSpread < modTotalSpreads - 1) modGoTo(modCurrentSpread + 1);
+});
+
+function openModule(sectorIdx) {
+  // For now only Industrial (sector 2) has a module
+  if (sectorIdx !== 2) return;
+  modGoTo(0);
+  var ov = document.getElementById('module-overlay');
+  ov.style.display = 'flex';
+  setTimeout(function() { ov.classList.add('visible'); }, 50);
+}
+
+document.getElementById('module-close').addEventListener('click', function() {
+  var ov = document.getElementById('module-overlay');
+  ov.classList.remove('visible');
+  setTimeout(function() { ov.style.display = 'none'; }, 600);
+});
+
+// Click on 3D models to open module
+renderer.domElement.addEventListener('click', function(e) {
+  var clickMouse = new THREE.Vector2(
+    (e.clientX / innerWidth) * 2 - 1,
+    -(e.clientY / innerHeight) * 2 + 1
+  );
+  var clickRay = new THREE.Raycaster();
+  clickRay.setFromCamera(clickMouse, camera);
+
+  for (var i = 0; i < cachedDecoMeshes.length; i++) {
+    var hits = clickRay.intersectObjects(cachedDecoMeshes[i].meshes);
+    if (hits.length > 0) {
+      openModule(cachedDecoMeshes[i].idx);
+      break;
+    }
+  }
 });
 
 </script>
