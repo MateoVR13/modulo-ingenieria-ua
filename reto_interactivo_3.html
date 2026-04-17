@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reto Interactivo 3 · Logística · Cervecería UA</title>
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --cream:#f5e6c8;
+      --cream-dark:#e8d5aa;
+      --brown:#5a4a2a;
+      --brown-dark:#3a2a10;
+      --brown-light:#8b7340;
+      --gold:#d4a843;
+      --blue:#2980B9;
+      --blue-dark:#1F618D;
+      --blue-darker:#154360;
+      --green:#27AE60;
+      --green-dark:#1E8449;
+      --red:#E74C3C;
+      --red-dark:#922B21;
+      --orange:#E67E22;
+      --orange-dark:#CA6F1E;
+    }
+    body{font-family:'Google Sans','DM Sans',sans-serif;background:linear-gradient(180deg,#f5e6c8,#e8d5aa);min-height:100vh;color:var(--brown-dark);overflow:hidden;font-weight:500}
+
+    /* HEADER */
+    .reto-header{display:flex;align-items:center;gap:20px;padding:14px 28px;background:linear-gradient(180deg,var(--cream),#efe0c0);border-bottom:3px solid var(--brown);box-shadow:0 3px 0 #c4a86a;height:72px;flex-shrink:0}
+    .btn-back{background:var(--brown);color:var(--cream);border:2px solid var(--brown-dark);padding:8px 14px;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;border-radius:6px;letter-spacing:.5px;transition:all .15s;box-shadow:3px 3px 0 var(--brown-dark)}
+    .btn-back:hover{background:var(--brown-light);transform:translate(-2px,-2px);box-shadow:5px 5px 0 var(--brown-dark)}
+    .reto-title{flex:1}
+    .reto-badge{display:inline-block;background:var(--blue);color:#fff;font-size:10px;font-weight:700;letter-spacing:2px;padding:3px 9px;border-radius:3px;text-transform:uppercase;margin-bottom:4px;box-shadow:2px 2px 0 var(--blue-darker)}
+    .reto-title h1{font-size:18px;font-weight:700;color:var(--brown-dark);letter-spacing:.3px;line-height:1.2}
+
+    /* MAIN */
+    .reto-main{display:grid;grid-template-columns:340px 1fr;gap:18px;padding:18px;height:calc(100vh - 72px);overflow:hidden}
+
+    /* HUGUI */
+    .hugui-side{background:linear-gradient(135deg,var(--cream),#efe0c0,var(--cream-dark));border:3px solid var(--brown);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;box-shadow:5px 5px 0 var(--brown),8px 8px 0 rgba(90,74,42,.3)}
+    .hugui-portrait{width:100%;aspect-ratio:1;max-width:180px;margin:0 auto;background:linear-gradient(180deg,var(--cream-dark),#dcc898);border:3px solid var(--brown);border-radius:10px;display:flex;align-items:center;justify-content:center;padding:8px;box-shadow:inset 0 2px 8px rgba(0,0,0,.12),3px 3px 0 var(--brown-light)}
+    .hugui-portrait img{width:100%;height:100%;object-fit:contain}
+    .hugui-speaker{font-size:11px;font-weight:800;color:var(--brown);letter-spacing:2px;padding-bottom:6px;border-bottom:2px dashed #c4a86a;text-transform:uppercase;margin-top:4px}
+    .hugui-text{font-size:14px;color:var(--brown-dark);line-height:1.55;min-height:120px;font-weight:500}
+    .hugui-text strong{color:var(--blue-dark);font-weight:700}
+    .hugui-hint{background:rgba(41,128,185,.12);border-left:4px solid var(--blue);padding:10px 12px;border-radius:4px;font-size:12px;color:var(--brown);line-height:1.5;margin-top:auto}
+
+    /* GAME SIDE */
+    .game-side{display:flex;flex-direction:column;gap:12px;overflow:hidden;min-width:0}
+
+    /* Recap banner (hilo conductor de Retos 1+2) */
+    .recap-banner{background:linear-gradient(135deg,rgba(39,174,96,.12),rgba(230,126,34,.08));border:2px solid var(--green);border-radius:8px;padding:10px 14px;display:flex;align-items:center;gap:10px;font-size:12px;color:var(--brown-dark);flex-shrink:0;box-shadow:2px 2px 0 var(--green-dark)}
+    .recap-icon{font-size:18px;flex-shrink:0}
+    .recap-banner strong{color:var(--green-dark);font-weight:700}
+
+    /* Stepper */
+    .stepper{display:flex;align-items:center;background:rgba(255,255,255,.6);border:2px solid #8b6914;border-radius:10px;padding:10px 14px;box-shadow:3px 3px 0 #8b6914;gap:4px;flex-shrink:0}
+    .step-item{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+    .step-circle{width:36px;height:36px;border-radius:50%;background:#d4c090;border:3px solid #8b6914;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;transition:all .3s;position:relative}
+    .step-item.active .step-circle{background:var(--blue);border-color:var(--blue-dark);color:#fff;animation:pulse-step 1.5s infinite}
+    .step-item.done .step-circle{background:var(--blue);border-color:var(--blue-dark);color:#fff}
+    .step-item.done .step-circle::after{content:'✓';position:absolute;font-size:18px;font-weight:900;color:#fff}
+    .step-item.done .step-emoji{display:none}
+    @keyframes pulse-step{0%,100%{box-shadow:0 0 0 0 rgba(41,128,185,.55)}70%{box-shadow:0 0 0 10px rgba(41,128,185,0)}}
+    .step-info{min-width:0}
+    .step-label{font-size:9px;font-weight:700;letter-spacing:1.5px;color:var(--brown-light);text-transform:uppercase}
+    .step-item.active .step-label,.step-item.done .step-label{color:var(--blue-dark)}
+    .step-name{font-size:13px;font-weight:700;color:var(--brown-dark);line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .step-divider{flex:0 0 auto;width:24px;height:3px;background:#c4a86a;border-radius:2px;margin:0 4px}
+    .step-divider.done{background:var(--blue)}
+
+    /* Metrics */
+    .metrics-top{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;flex-shrink:0}
+    .metric{background:rgba(255,255,255,.55);border:2px solid #8b6914;border-radius:8px;padding:10px 12px;text-align:center;transition:all .3s;box-shadow:3px 3px 0 #8b6914}
+    .metric.warning{border-color:var(--red);box-shadow:3px 3px 0 var(--red-dark)}
+    .metric.success{border-color:var(--green);box-shadow:3px 3px 0 var(--green-dark)}
+    .metric-label{font-size:9px;font-weight:700;letter-spacing:1.4px;color:#8b6914;text-transform:uppercase;margin-bottom:3px}
+    .metric-value{font-size:20px;font-weight:800;color:var(--brown-dark);letter-spacing:.3px;font-variant-numeric:tabular-nums}
+    .metric-sub{font-size:10px;color:var(--brown-light);margin-top:2px;font-weight:500}
+    .metric.warning .metric-value{color:var(--red)}
+    .metric.success .metric-value{color:var(--green)}
+
+    /* Scene */
+    .scene-container{flex:1;background:linear-gradient(180deg,#d6e8f5,#e8d5aa);border:3px solid var(--brown);border-radius:12px;position:relative;overflow:hidden;box-shadow:5px 5px 0 var(--brown),8px 8px 0 rgba(90,74,42,.3);min-height:0}
+    #scene-canvas{width:100%;height:100%;display:block;cursor:grab}
+
+    /* Pointer */
+    .scene-pointer{position:absolute;z-index:30;pointer-events:none;transform:translate(-50%,-100%);display:none;animation:bob 1s ease-in-out infinite}
+    .scene-pointer.visible{display:block}
+    @keyframes bob{0%,100%{transform:translate(-50%,-100%)}50%{transform:translate(-50%,calc(-100% - 10px))}}
+    .pointer-bubble{background:var(--blue);color:#fff;padding:6px 12px;border-radius:16px;font-size:12px;font-weight:700;box-shadow:2px 2px 0 var(--blue-darker);white-space:nowrap;letter-spacing:.3px}
+    .pointer-arrow{width:0;height:0;margin:0 auto;border-left:10px solid transparent;border-right:10px solid transparent;border-top:14px solid var(--blue);filter:drop-shadow(0 3px 0 var(--blue-darker))}
+
+    .floater{position:absolute;font-size:16px;font-weight:800;pointer-events:none;z-index:25;text-shadow:2px 2px 0 rgba(0,0,0,.35);animation:float-up 1.4s ease-out forwards;transform:translate(-50%,0)}
+    @keyframes float-up{0%{opacity:0;transform:translate(-50%,0) scale(.7)}15%{opacity:1;transform:translate(-50%,-14px) scale(1.15)}40%{opacity:1;transform:translate(-50%,-34px) scale(1)}100%{opacity:0;transform:translate(-50%,-80px) scale(.95)}}
+
+    .observe-overlay{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:40;text-align:center;pointer-events:none;animation:observe-pop 4s ease-out forwards;display:none}
+    .observe-overlay.visible{display:block}
+    @keyframes observe-pop{0%{opacity:0;transform:translate(-50%,-50%) scale(.7)}15%,75%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.2)}}
+    .observe-icon{font-size:64px;filter:drop-shadow(4px 4px 0 rgba(0,0,0,.3));margin-bottom:6px}
+    .observe-text{background:rgba(58,42,16,.9);color:var(--cream);padding:10px 22px;border-radius:24px;font-size:15px;font-weight:700;box-shadow:4px 4px 0 rgba(0,0,0,.3);letter-spacing:.5px}
+
+    /* Mini cards flotantes (progreso de revisión) */
+    .minicards{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.92);border:3px solid var(--brown);border-radius:8px;padding:12px;box-shadow:4px 4px 0 var(--brown);z-index:20;min-width:180px}
+    .minicards h4{font-size:11px;letter-spacing:1.5px;color:var(--brown);text-transform:uppercase;font-weight:700;margin-bottom:8px;padding-bottom:6px;border-bottom:2px dashed #c4a86a;display:flex;align-items:center;gap:6px}
+    .minicards-grid{display:flex;flex-direction:column;gap:6px}
+    .mini-slot{display:flex;align-items:center;gap:8px;padding:6px 8px;background:rgba(0,0,0,.05);border:2px dashed #c4a86a;border-radius:6px;font-size:11px;font-weight:600;color:var(--brown-light);transition:all .2s}
+    .mini-slot.reviewed{background:rgba(41,128,185,.12);border:2px solid var(--blue);border-style:solid;color:var(--blue-dark)}
+    .mini-slot.assigned-v{border-left:4px solid var(--green)}
+    .mini-slot.assigned-s{border-left:4px solid var(--orange)}
+    .mini-slot-icon{font-size:14px}
+    .mini-slot-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .mini-slot-tag{font-size:9px;font-weight:800;padding:2px 5px;border-radius:3px;letter-spacing:.5px;text-transform:uppercase}
+    .mini-slot-tag.v{background:var(--green);color:#fff}
+    .mini-slot-tag.s{background:var(--orange);color:#fff}
+
+    /* Actions */
+    .actions-bottom{display:flex;gap:12px;justify-content:space-between;align-items:center;flex-shrink:0}
+    .btn{background:var(--brown);color:var(--cream);border:2px solid var(--brown-dark);padding:11px 22px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;border-radius:6px;letter-spacing:.8px;transition:all .15s;box-shadow:4px 4px 0 var(--brown-dark);position:relative}
+    .btn:hover:not(:disabled){background:var(--brown-light);transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--brown-dark)}
+    .btn:active{transform:translate(0,0);box-shadow:2px 2px 0 var(--brown-dark)}
+    .btn-primary{background:linear-gradient(135deg,var(--blue),var(--blue-dark));border-color:var(--blue-darker);color:#fff;box-shadow:4px 4px 0 var(--blue-darker)}
+    .btn-primary:hover:not(:disabled){background:linear-gradient(135deg,var(--blue-dark),var(--blue-darker));box-shadow:6px 6px 0 var(--blue-darker)}
+    .btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:4px 4px 0 var(--brown-dark)}
+    .btn-primary.ready{animation:ready-pulse 1s ease-in-out infinite}
+    @keyframes ready-pulse{0%,100%{transform:translate(0,0);box-shadow:4px 4px 0 var(--blue-darker),0 0 0 0 rgba(41,128,185,.6)}50%{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--blue-darker),0 0 0 12px rgba(41,128,185,0)}}
+    .btn-primary.ready::after{content:'👈 ¡Listo!';position:absolute;left:calc(100% + 12px);top:50%;transform:translateY(-50%);background:var(--blue);color:#fff;padding:6px 12px;border-radius:6px;font-size:12px;white-space:nowrap;box-shadow:2px 2px 0 var(--blue-darker);animation:wiggle-tip 1.2s ease-in-out infinite}
+    @keyframes wiggle-tip{0%,100%{transform:translateY(-50%) translateX(0)}50%{transform:translateY(-50%) translateX(-6px)}}
+
+    /* Generic modal */
+    .modal-overlay{position:fixed;inset:0;background:rgba(58,42,16,.5);display:none;z-index:500;backdrop-filter:blur(2px)}
+    .modal-overlay.visible{display:block}
+    .modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:92%;max-width:620px;background:linear-gradient(135deg,var(--cream),#efe0c0);border:4px solid var(--brown);border-radius:14px;padding:24px;display:none;z-index:501;box-shadow:8px 8px 0 var(--brown-dark),12px 12px 0 rgba(58,42,16,.3);max-height:90vh;overflow-y:auto}
+    .modal.visible{display:block;animation:pop-up .3s cubic-bezier(.18,.89,.32,1.28)}
+    @keyframes pop-up{from{transform:translate(-50%,-50%) scale(.8);opacity:0}to{transform:translate(-50%,-50%) scale(1);opacity:1}}
+    .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+    .modal-header h3{font-size:20px;font-weight:800;color:var(--brown-dark)}
+    .modal-close{background:var(--red-dark);color:#fff;border:2px solid #5a1814;width:32px;height:32px;border-radius:50%;font-size:14px;font-weight:700;cursor:pointer;box-shadow:2px 2px 0 #5a1814;transition:all .15s}
+    .modal-close:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 #5a1814}
+
+    /* Order detail panel (step 1) */
+    .order-card-big{background:rgba(255,255,255,.5);border:2px solid #8b6914;border-radius:10px;padding:14px;margin:10px 0;box-shadow:3px 3px 0 #8b6914}
+    .order-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px}
+    .order-icon{font-size:28px}
+    .order-name{font-size:16px;font-weight:800;color:var(--brown-dark);margin-bottom:2px}
+    .order-client{font-size:11px;color:var(--brown-light);text-transform:uppercase;letter-spacing:1px}
+    .order-stars{font-size:14px;color:#e6a810;letter-spacing:-1px}
+    .order-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+    .order-stat{background:rgba(0,0,0,.05);padding:8px 10px;border-radius:6px;text-align:center}
+    .order-stat-label{font-size:9px;font-weight:700;color:var(--brown-light);letter-spacing:1px;text-transform:uppercase}
+    .order-stat-value{font-size:14px;font-weight:800;color:var(--brown-dark);margin-top:2px}
+
+    /* Assignment panel — redesign con instrucciones paso a paso */
+    .assign-intro-big{background:linear-gradient(135deg,rgba(41,128,185,.12),rgba(41,128,185,.04));border:2px solid var(--blue);border-left-width:5px;border-radius:8px;padding:14px 16px;margin-bottom:14px;box-shadow:3px 3px 0 var(--blue-dark)}
+    .assign-intro-title{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:800;color:var(--blue-dark);margin-bottom:8px;letter-spacing:.3px}
+    .assign-steps{list-style:none;padding:0;margin:0;counter-reset:step}
+    .assign-steps li{position:relative;padding:6px 0 6px 34px;font-size:13px;color:var(--brown-dark);line-height:1.5;counter-increment:step}
+    .assign-steps li::before{content:counter(step);position:absolute;left:0;top:6px;width:24px;height:24px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;box-shadow:2px 2px 0 var(--blue-dark)}
+    .assign-steps li strong{color:var(--blue-dark);font-weight:800}
+
+    .trucks-status{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+    .truck-card{background:rgba(255,255,255,.6);border:2px solid #8b6914;border-radius:8px;padding:10px 12px;box-shadow:3px 3px 0 #8b6914}
+    .truck-card h4{font-size:13px;font-weight:800;color:var(--brown-dark);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+    .truck-card.viernes{border-color:var(--green);box-shadow:3px 3px 0 var(--green-dark)}
+    .truck-card.sabado{border-color:var(--orange);box-shadow:3px 3px 0 var(--orange-dark)}
+    .truck-bar{width:100%;height:16px;background:rgba(0,0,0,.1);border-radius:8px;overflow:hidden;border:1px solid var(--brown-light)}
+    .truck-bar-fill{height:100%;transition:width .3s ease-out;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;font-size:10px;font-weight:800;color:#fff;min-width:24px}
+    .truck-card.viernes .truck-bar-fill{background:var(--green)}
+    .truck-card.sabado .truck-bar-fill{background:var(--orange)}
+    .truck-bar-fill.over{background:var(--red)!important}
+    .truck-detail{font-size:11px;color:var(--brown-light);margin-top:4px;font-weight:600}
+    .truck-detail.over{color:var(--red-dark);font-weight:800}
+
+    /* Pedido row redesign — vertical layout más claro */
+    .assign-orders{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+    .assign-row{background:rgba(255,255,255,.55);border:2px solid #8b6914;border-radius:10px;padding:12px 14px;box-shadow:3px 3px 0 #8b6914;transition:all .2s}
+    .assign-row.done-ok{background:rgba(39,174,96,.12);border-color:var(--green);box-shadow:3px 3px 0 var(--green-dark)}
+    .assign-row.done-wrong{background:rgba(231,76,60,.1);border-color:var(--red);box-shadow:3px 3px 0 var(--red-dark);animation:shake .4s}
+    @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+    .assign-row-top{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px}
+    .assign-row-icon{font-size:28px;flex-shrink:0;line-height:1}
+    .assign-row-body{flex:1;min-width:0}
+    .assign-row-name{font-size:14px;font-weight:800;color:var(--brown-dark);margin-bottom:3px}
+    .assign-row-stars{color:#e6a810;font-size:13px;margin-left:4px;letter-spacing:-1px}
+    .assign-row-detail{font-size:11.5px;color:var(--brown-light);font-weight:600}
+    .day-badge{font-size:11px;font-weight:800;padding:5px 10px;border-radius:5px;letter-spacing:1px;text-transform:uppercase;white-space:nowrap;flex-shrink:0;align-self:flex-start}
+    .day-badge.viernes{background:var(--green);color:#fff;box-shadow:2px 2px 0 var(--green-dark)}
+    .day-badge.sabado{background:var(--orange);color:#fff;box-shadow:2px 2px 0 var(--orange-dark)}
+    .assign-row-bottom{display:flex;align-items:center;gap:10px;padding-top:8px;border-top:1px dashed #c4a86a}
+    .assign-row-prompt{font-size:11.5px;color:var(--brown-light);font-weight:600;flex-shrink:0}
+    .assign-buttons{display:flex;gap:8px;flex:1}
+    .assign-btn{flex:1;padding:9px 10px;border:2px solid var(--brown);border-radius:6px;font-family:inherit;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:.5px;transition:all .15s;box-shadow:2px 2px 0 var(--brown);background:#fff;display:flex;align-items:center;justify-content:center;gap:5px}
+    .assign-btn:hover:not(:disabled){transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--brown)}
+    .assign-btn.viernes{color:var(--green-dark);border-color:var(--green-dark)}
+    .assign-btn.sabado{color:var(--orange-dark);border-color:var(--orange-dark)}
+    .assign-btn.selected.viernes{background:var(--green);color:#fff;border-color:var(--green-dark);box-shadow:2px 2px 0 var(--green-dark)}
+    .assign-btn.selected.sabado{background:var(--orange);color:#fff;border-color:var(--orange-dark);box-shadow:2px 2px 0 var(--orange-dark)}
+    .assign-btn.selected.wrong{background:var(--red);color:#fff;border-color:var(--red-dark);box-shadow:2px 2px 0 var(--red-dark)}
+    .assign-btn:disabled{opacity:.4;cursor:not-allowed}
+
+    .assign-warning{background:rgba(231,76,60,.1);border-left:4px solid var(--red);padding:10px 14px;border-radius:6px;font-size:12.5px;color:var(--red-dark);line-height:1.5;margin-top:10px;display:none}
+    .assign-warning.visible{display:block;animation:slide-down .3s}
+    .assign-warning strong{color:var(--red-dark)}
+
+    /* Route panel (step 3) */
+    .route-intro{background:rgba(41,128,185,.1);border-left:4px solid var(--blue);padding:10px 14px;border-radius:6px;font-size:13px;color:var(--brown-dark);line-height:1.5;margin-bottom:12px}
+    .route-intro strong{color:var(--blue-dark)}
+    .route-truck{background:rgba(255,255,255,.5);border:2px solid #8b6914;border-radius:10px;padding:14px;margin-bottom:12px;box-shadow:3px 3px 0 #8b6914}
+    .route-truck.viernes{border-color:var(--green);box-shadow:3px 3px 0 var(--green-dark)}
+    .route-truck.sabado{border-color:var(--orange);box-shadow:3px 3px 0 var(--orange-dark)}
+    .route-truck h4{font-size:14px;font-weight:800;color:var(--brown-dark);margin-bottom:10px;display:flex;align-items:center;gap:8px;justify-content:space-between}
+    .route-reset{background:transparent;border:none;color:var(--red-dark);font-size:11px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:.5px}
+    .route-reset:hover{text-decoration:underline}
+    .route-dests{display:flex;flex-direction:column;gap:6px}
+    .route-dest{display:flex;align-items:center;gap:10px;padding:8px 10px;background:rgba(0,0,0,.03);border:2px solid #c4a86a;border-radius:6px;cursor:pointer;transition:all .15s}
+    .route-dest:hover:not(.disabled){background:rgba(41,128,185,.1);border-color:var(--blue);transform:translate(-1px,-1px)}
+    .route-dest.disabled{opacity:.5;cursor:not-allowed}
+    .route-dest.picked{background:rgba(41,128,185,.15);border-color:var(--blue);border-style:solid}
+    .route-order{width:26px;height:26px;border-radius:50%;background:#d4c090;border:2px solid #8b6914;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--brown-light);flex-shrink:0}
+    .route-dest.picked .route-order{background:var(--blue);color:#fff;border-color:var(--blue-dark)}
+    .route-dest-icon{font-size:18px}
+    .route-dest-body{flex:1;min-width:0}
+    .route-dest-name{font-size:12px;font-weight:700;color:var(--brown-dark)}
+    .route-dest-deadline{font-size:10.5px;color:var(--brown-light)}
+
+    /* Results */
+    .results-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+    .kpi-big{background:rgba(255,255,255,.6);border:2px solid #8b6914;border-radius:8px;padding:14px;text-align:center;box-shadow:3px 3px 0 #8b6914}
+    .kpi-big.success{border-color:var(--green);box-shadow:3px 3px 0 var(--green-dark)}
+    .kpi-big.warning{border-color:var(--orange);box-shadow:3px 3px 0 var(--orange-dark)}
+    .kpi-big-label{font-size:10px;font-weight:700;color:var(--brown-light);letter-spacing:1.5px;text-transform:uppercase}
+    .kpi-big-value{font-size:28px;font-weight:800;color:var(--brown-dark);margin:4px 0;font-variant-numeric:tabular-nums}
+    .kpi-big.success .kpi-big-value{color:var(--green-dark)}
+    .kpi-big.warning .kpi-big-value{color:var(--orange-dark)}
+    .kpi-big-sub{font-size:11px;color:var(--brown-light)}
+
+    /* Feedback modal */
+    .feedback-overlay{position:fixed;inset:0;background:rgba(58,42,16,.85);display:none;align-items:center;justify-content:center;z-index:1000;padding:20px;backdrop-filter:blur(6px)}
+    .feedback-overlay.visible{display:flex;animation:fade-in .3s}
+    @keyframes fade-in{from{opacity:0}to{opacity:1}}
+    .feedback-modal{background:linear-gradient(135deg,var(--cream),var(--cream-dark));border:4px solid var(--brown);border-radius:14px;max-width:740px;width:100%;padding:28px;box-shadow:8px 8px 0 var(--brown-dark),12px 12px 0 rgba(58,42,16,.3);animation:pop-up-fb .4s cubic-bezier(.18,.89,.32,1.28);max-height:90vh;overflow-y:auto}
+    @keyframes pop-up-fb{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+    .fb-celebration{text-align:center;margin-bottom:18px}
+    .fb-icon{font-size:48px;margin-bottom:6px;filter:drop-shadow(3px 3px 0 rgba(90,74,42,.3))}
+    .fb-title{font-size:24px;font-weight:800;color:var(--blue-dark);letter-spacing:.3px}
+    .fb-subtitle{font-size:14px;color:var(--brown);margin-top:8px;line-height:1.5}
+    .fb-question-wrap{display:flex;gap:16px;align-items:flex-start;background:rgba(255,255,255,.45);border:2px dashed #8b6914;border-radius:10px;padding:16px;margin-bottom:18px}
+    .fb-hugui-portrait{width:88px;height:88px;flex-shrink:0;background:linear-gradient(180deg,var(--cream-dark),#dcc898);border:3px solid var(--brown);border-radius:8px;display:flex;align-items:center;justify-content:center;padding:6px;box-shadow:3px 3px 0 var(--brown-light)}
+    .fb-hugui-portrait img{width:100%;height:100%;object-fit:contain}
+    .fb-question-content{flex:1;min-width:0}
+    .fb-speaker{font-size:11px;font-weight:800;color:#8b6914;letter-spacing:1.5px;margin-bottom:8px;padding-bottom:6px;border-bottom:2px dashed #c4a86a;text-transform:uppercase}
+    .fb-question{font-size:15px;font-weight:700;color:var(--brown-dark);line-height:1.5}
+    .fb-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:16px}
+    .fb-opt{background:linear-gradient(180deg,#fff7e0,#f0d8a0);color:var(--brown-dark);border:2px solid #8b6914;padding:14px 10px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;border-radius:6px;transition:all .2s;box-shadow:3px 3px 0 #8b6914}
+    .fb-opt:hover:not(:disabled){background:linear-gradient(180deg,var(--gold),#a87a1e);color:#fff;transform:translate(-2px,-2px);box-shadow:5px 5px 0 #8b6914}
+    .fb-opt.correct{background:linear-gradient(180deg,var(--blue),var(--blue-dark));color:#fff;border-color:var(--blue-darker);box-shadow:3px 3px 0 var(--blue-darker);animation:correct-pulse .5s}
+    .fb-opt.chosen-wrong{background:linear-gradient(180deg,var(--gold),#a87a1e);color:#fff;border-color:var(--brown);box-shadow:3px 3px 0 var(--brown)}
+    .fb-opt:disabled{cursor:not-allowed}
+    @keyframes correct-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+    .fb-explanation{padding:16px;background:rgba(41,128,185,.12);border-left:4px solid var(--blue);border-radius:6px;margin-top:12px;font-size:14px;color:var(--brown-dark);line-height:1.6;display:none}
+    .fb-explanation.visible{display:block;animation:slide-down .3s}
+    @keyframes slide-down{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+    .fb-explanation strong{color:var(--blue-dark)}
+    .fb-continue{margin-top:18px;display:none;width:100%;padding:14px;font-size:14px}
+    .fb-continue.visible{display:block;animation:slide-up .3s .2s backwards}
+    @keyframes slide-up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+    /* CELEBRATION MODAL */
+    .celebration-overlay{position:fixed;inset:0;background:rgba(58,42,16,.92);display:none;align-items:center;justify-content:center;z-index:2000;backdrop-filter:blur(10px);padding:20px}
+    .celebration-overlay.visible{display:flex;animation:fade-in .4s}
+    .celebration-modal{background:linear-gradient(135deg,#fff7e0,var(--cream),var(--cream-dark));border:4px solid var(--brown);border-radius:16px;max-width:640px;width:100%;padding:32px 28px;text-align:center;box-shadow:10px 10px 0 var(--brown-dark),15px 15px 0 rgba(58,42,16,.35);animation:celebration-pop .6s cubic-bezier(.18,.89,.32,1.28);position:relative;overflow:hidden}
+    @keyframes celebration-pop{from{transform:scale(.5) rotate(-8deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+    .celebration-confetti{position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;overflow:hidden;z-index:0}
+    .celebration-confetti span{position:absolute;font-size:22px;opacity:0;animation:confetti-fall 4s linear infinite}
+    .celebration-confetti span:nth-child(1){left:8%;animation-delay:0s;animation-duration:3.5s}
+    .celebration-confetti span:nth-child(2){left:22%;animation-delay:.8s;animation-duration:4.2s}
+    .celebration-confetti span:nth-child(3){left:40%;animation-delay:1.5s;animation-duration:3.8s}
+    .celebration-confetti span:nth-child(4){left:58%;animation-delay:.4s;animation-duration:4.5s}
+    .celebration-confetti span:nth-child(5){left:74%;animation-delay:2s;animation-duration:3.6s}
+    .celebration-confetti span:nth-child(6){left:88%;animation-delay:1.2s;animation-duration:4s}
+    @keyframes confetti-fall{0%{transform:translateY(-40px) rotate(0);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(600px) rotate(540deg);opacity:0}}
+    .celebration-content{position:relative;z-index:1}
+    .celebration-trophy{font-size:88px;margin-bottom:8px;animation:trophy-bounce 1.6s ease-in-out infinite;filter:drop-shadow(0 8px 0 rgba(90,74,42,.25))}
+    @keyframes trophy-bounce{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-10px) scale(1.06)}}
+    .celebration-title{font-size:28px;font-weight:800;color:var(--brown-dark);letter-spacing:.3px;margin-bottom:10px;line-height:1.2}
+    .celebration-subtitle{font-size:14px;color:var(--brown);line-height:1.55;margin-bottom:22px;max-width:480px;margin-left:auto;margin-right:auto}
+    .celebration-subtitle strong{color:var(--brown-dark);font-weight:700}
+    .celebration-retos{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:22px}
+    .celebration-reto{background:rgba(255,255,255,.7);border:3px solid;border-radius:10px;padding:14px 8px;position:relative;animation:reto-pop .5s cubic-bezier(.18,.89,.32,1.28) backwards}
+    .celebration-reto:nth-child(1){animation-delay:.3s;border-color:#E67E22;box-shadow:3px 3px 0 #8b3a0a}
+    .celebration-reto:nth-child(2){animation-delay:.5s;border-color:var(--green);box-shadow:3px 3px 0 var(--green-dark)}
+    .celebration-reto:nth-child(3){animation-delay:.7s;border-color:var(--blue);box-shadow:3px 3px 0 var(--blue-darker)}
+    @keyframes reto-pop{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
+    .celebration-reto-icon{font-size:32px;margin-bottom:4px;line-height:1}
+    .celebration-reto-name{font-size:11px;font-weight:800;color:var(--brown-dark);text-transform:uppercase;letter-spacing:1.2px}
+    .celebration-reto-desc{font-size:10px;color:var(--brown-light);margin-top:2px;font-weight:600}
+    .celebration-reto-check{position:absolute;top:-10px;right:-10px;width:30px;height:30px;background:#fff;border:3px solid;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;animation:check-pop .4s cubic-bezier(.18,.89,.32,1.28) backwards}
+    .celebration-reto:nth-child(1) .celebration-reto-check{border-color:#E67E22;color:#CA6F1E;animation-delay:.6s}
+    .celebration-reto:nth-child(2) .celebration-reto-check{border-color:var(--green);color:var(--green-dark);animation-delay:.8s}
+    .celebration-reto:nth-child(3) .celebration-reto-check{border-color:var(--blue);color:var(--blue-dark);animation-delay:1s}
+    @keyframes check-pop{from{transform:scale(0) rotate(-180deg)}to{transform:scale(1) rotate(0)}}
+    .celebration-message{background:rgba(142,68,173,.1);border-left:4px solid #8E44AD;padding:12px 16px;border-radius:6px;font-size:13px;color:var(--brown-dark);line-height:1.55;margin-bottom:18px;text-align:left}
+    .celebration-message strong{color:#6C3483}
+    .celebration-countdown{margin-bottom:18px}
+    .countdown-text{font-size:13px;color:var(--brown);margin-bottom:8px;font-weight:600}
+    .countdown-text strong{color:var(--blue-dark);font-size:18px;font-weight:800;font-variant-numeric:tabular-nums;margin:0 3px}
+    .countdown-bar{width:100%;height:10px;background:rgba(0,0,0,.1);border-radius:5px;overflow:hidden;border:1px solid var(--brown-light);box-shadow:inset 2px 2px 0 rgba(0,0,0,.08)}
+    .countdown-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--blue-dark));width:100%;transition:width 1s linear;box-shadow:inset 0 2px 0 rgba(255,255,255,.3)}
+    .celebration-btn{width:100%;padding:14px;font-size:14px}
+
+    @media (max-width:980px){
+      .reto-main{grid-template-columns:1fr;height:auto;overflow:visible}
+      body{overflow:auto}
+      .metrics-top{grid-template-columns:repeat(2,1fr)}
+      .fb-question-wrap{flex-direction:column;align-items:center;text-align:center}
+      .stepper{flex-wrap:wrap}
+      .minicards{position:static;margin-bottom:10px}
+      .trucks-status{grid-template-columns:1fr}
+      .results-kpis{grid-template-columns:1fr}
+      .celebration-retos{grid-template-columns:1fr}
+      .celebration-trophy{font-size:64px}
+      .celebration-title{font-size:22px}
+    }
+  </style>
+</head>
+<body>
+
+  <header class="reto-header">
+    <button class="btn-back" onclick="window.location.href='index.html'">◀ Salir</button>
+    <div class="reto-title">
+      <span class="reto-badge">Reto 3 · Logística</span>
+      <h1>Coordina la distribución de la semana</h1>
+    </div>
+  </header>
+
+  <main class="reto-main">
+
+    <aside class="hugui-side">
+      <div class="hugui-portrait"><img src="static/img/avatars/buhotutor.png" alt="Hugui"></div>
+      <div class="hugui-speaker">🦉 Hugui · Tu tutor</div>
+      <div class="hugui-text" id="hugui-text">¡Ya tenemos proceso eficiente y calidad estable! Pero sin buena logística, nada llega al cliente. Tienes <strong>4 pedidos pendientes</strong> y <strong>2 camiones disponibles</strong>. Primero, <strong>haz click en cada destino del mapa</strong> para revisar qué piden, cuándo y con qué prioridad.</div>
+      <div class="hugui-hint">
+        <strong>💡 Tip:</strong> la flecha azul te indica el siguiente destino a revisar.
+      </div>
+    </aside>
+
+    <section class="game-side">
+
+      <div class="recap-banner">
+        <span class="recap-icon">🔗</span>
+        <span>Vienes de resolver <strong>el cuello de botella (Reto 1)</strong> y <strong>la calidad (Reto 2)</strong>. Cervecería UA produce bien y sin defectos. Ahora falta <strong>entregar a tiempo</strong>.</span>
+      </div>
+
+      <div class="stepper" id="stepper">
+        <div class="step-item active" data-step="1">
+          <div class="step-circle"><span class="step-emoji">📥</span></div>
+          <div class="step-info"><div class="step-label">Paso 1</div><div class="step-name">Revisar</div></div>
+        </div>
+        <div class="step-divider"></div>
+        <div class="step-item" data-step="2">
+          <div class="step-circle"><span class="step-emoji">🚛</span></div>
+          <div class="step-info"><div class="step-label">Paso 2</div><div class="step-name">Asignar</div></div>
+        </div>
+        <div class="step-divider"></div>
+        <div class="step-item" data-step="3">
+          <div class="step-circle"><span class="step-emoji">🗺️</span></div>
+          <div class="step-info"><div class="step-label">Paso 3</div><div class="step-name">Rutas</div></div>
+        </div>
+        <div class="step-divider"></div>
+        <div class="step-item" data-step="4">
+          <div class="step-circle"><span class="step-emoji">✅</span></div>
+          <div class="step-info"><div class="step-label">Paso 4</div><div class="step-name">Despachar</div></div>
+        </div>
+      </div>
+
+      <div class="metrics-top">
+        <div class="metric" id="metric-reviewed">
+          <div class="metric-label">Revisados</div>
+          <div class="metric-value" id="reviewed-value">0 / 4</div>
+          <div class="metric-sub">pedidos</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Asignados</div>
+          <div class="metric-value" id="assigned-value">0 / 4</div>
+          <div class="metric-sub">a camiones</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Rutas</div>
+          <div class="metric-value" id="routes-value">0 / 2</div>
+          <div class="metric-sub">planeadas</div>
+        </div>
+        <div class="metric" id="metric-otif">
+          <div class="metric-label">OTIF</div>
+          <div class="metric-value" id="otif-value" style="font-size:14px;color:#8b7340">—</div>
+          <div class="metric-sub">on-time, in-full</div>
+        </div>
+      </div>
+
+      <div class="scene-container" id="scene-container">
+        <canvas id="scene-canvas"></canvas>
+        <div class="scene-pointer" id="scene-pointer">
+          <div class="pointer-bubble" id="pointer-text">¡Aquí!</div>
+          <div class="pointer-arrow"></div>
+        </div>
+        <div class="observe-overlay" id="observe-overlay">
+          <div class="observe-icon">🗺️</div>
+          <div class="observe-text">Mapa de distribución de Cervecería UA</div>
+        </div>
+        <div class="minicards" id="minicards">
+          <h4>📋 Pedidos de la semana</h4>
+          <div class="minicards-grid" id="minicards-grid"></div>
+        </div>
+      </div>
+
+      <div class="actions-bottom">
+        <button class="btn" id="btn-reset">↺ Reiniciar todo</button>
+        <button class="btn btn-primary" id="btn-next" disabled>Continuar →</button>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Order detail (step 1) -->
+  <div class="modal-overlay" id="order-overlay"></div>
+  <div class="modal" id="order-modal">
+    <div class="modal-header">
+      <h3 id="order-title">Pedido</h3>
+      <button class="modal-close" id="order-close">✕</button>
+    </div>
+    <div id="order-content"></div>
+    <button class="btn btn-primary" id="order-ok" style="width:100%;padding:14px;font-size:14px;margin-top:14px">Entendido</button>
+  </div>
+
+  <!-- Assignment (step 2) — rediseñado con instrucciones paso a paso -->
+  <div class="modal-overlay" id="assign-overlay"></div>
+  <div class="modal" id="assign-modal" style="max-width:700px">
+    <div class="modal-header">
+      <h3>🚛 Asignar pedidos a camiones</h3>
+    </div>
+
+    <div class="assign-intro-big">
+      <div class="assign-intro-title">
+        <span>🎯</span><span>¿Cómo se hace?</span>
+      </div>
+      <ol class="assign-steps">
+        <li><strong>Mira el día de entrega</strong> de cada pedido — cada uno tiene un <strong>badge 📅 Viernes o Sábado</strong>.</li>
+        <li>Asígnalo al <strong>camión del mismo día</strong> (🟢 Viernes o 🟠 Sábado). Un pedido del viernes NO puede ir en el camión del sábado.</li>
+        <li>Respeta la <strong>capacidad de 200 cajas</strong> por camión — mira las barras de abajo en vivo.</li>
+      </ol>
+    </div>
+
+    <div class="trucks-status" id="trucks-status"></div>
+
+    <div class="assign-orders" id="assign-orders"></div>
+
+    <div class="assign-warning" id="assign-warning"></div>
+
+    <button class="btn btn-primary" id="assign-continue" style="width:100%;padding:14px;font-size:14px;margin-top:14px" disabled>Asigna los 4 pedidos primero</button>
+  </div>
+
+  <!-- Route (step 3) -->
+  <div class="modal-overlay" id="route-overlay"></div>
+  <div class="modal" id="route-modal" style="max-width:620px">
+    <div class="modal-header">
+      <h3>🗺️ Planear rutas</h3>
+    </div>
+    <div class="route-intro">
+      <strong>Tarea:</strong> para cada camión, haz click en los destinos en el <strong>orden en que quieres visitarlos</strong>. Los pedidos con hora más temprana deben entregarse primero (sino, llegan tarde).
+    </div>
+    <div id="route-content"></div>
+    <button class="btn btn-primary" id="route-continue" style="width:100%;padding:14px;font-size:14px;margin-top:14px" disabled>Confirmar rutas y despachar →</button>
+  </div>
+
+  <!-- Results (step 4) -->
+  <div class="modal-overlay" id="results-overlay"></div>
+  <div class="modal" id="results-modal" style="max-width:680px">
+    <div class="modal-header">
+      <h3>📊 Resultados del despacho</h3>
+    </div>
+    <p id="results-summary" style="font-size:13px;color:var(--brown-dark);line-height:1.5;margin-bottom:10px"></p>
+    <div class="results-kpis" id="results-kpis"></div>
+    <div id="results-detail" style="background:rgba(0,0,0,.04);border-radius:8px;padding:12px;font-size:12.5px;color:var(--brown-dark);line-height:1.7"></div>
+    <button class="btn btn-primary" id="results-continue" style="width:100%;padding:14px;font-size:14px;margin-top:14px">Ver reflexión →</button>
+  </div>
+
+  <!-- Feedback modal -->
+  <div class="feedback-overlay" id="feedback-overlay">
+    <div class="feedback-modal">
+      <div class="fb-celebration">
+        <div class="fb-icon">🎉</div>
+        <div class="fb-title">¡Distribución completada!</div>
+        <div class="fb-subtitle" id="fb-subtitle">Acabas de coordinar la logística de una semana en Cervecería UA.</div>
+      </div>
+      <div class="fb-question-wrap">
+        <div class="fb-hugui-portrait"><img src="static/img/avatars/buhotutor.png" alt="Hugui"></div>
+        <div class="fb-question-content">
+          <div class="fb-speaker">🦉 Hugui pregunta</div>
+          <div class="fb-question">De todos los indicadores logísticos que existen, ¿cuál mide mejor el éxito desde la <strong>perspectiva del cliente</strong>?</div>
+        </div>
+      </div>
+      <div class="fb-options" id="fb-options">
+        <button class="fb-opt" data-correct="false" data-explain="<strong>¡Muy buena observación!</strong> El % de ocupación de camiones es un indicador de <strong>eficiencia interna</strong> — mide qué tan bien usas tus recursos. Es importante para controlar costos, pero el cliente no lo ve ni lo siente. El indicador que mejor refleja su experiencia es <strong>OTIF</strong> (on-time, in-full).">% Ocupación de camiones</button>
+        <button class="fb-opt" data-correct="false" data-explain="<strong>¡Pensaste en el costo!</strong> El costo por entrega es crítico para la rentabilidad y la negociación con el cliente. Pero mide <strong>la eficiencia de tu operación</strong>, no la experiencia del cliente. Desde el cliente, lo que importa es que llegue <strong>a tiempo y completo</strong>. Eso se mide con <strong>OTIF</strong>.">Costo por entrega</button>
+        <button class="fb-opt" data-correct="true" data-explain="<strong>¡Exacto!</strong> OTIF (On-Time In-Full) mide el porcentaje de pedidos entregados <strong>a tiempo y completos</strong>, que es exactamente lo que el cliente espera. No le importa cuántos kilómetros recorriste ni qué tan llenos iban los camiones: lo que le importa es que recibió lo que pidió, cuando lo pidió. Por eso OTIF es el KPI logístico más cercano al valor real para el cliente.">OTIF (On-Time In-Full)</button>
+        <button class="fb-opt" data-correct="false" data-explain="<strong>¡Buena intuición operacional!</strong> Los kilómetros recorridos miden qué tan eficiente es tu ruteo — impacta combustible, tiempo y huella de carbono. Todo importante. Pero no habla de la experiencia del cliente directamente. El cliente solo quiere su pedido <strong>a tiempo y completo</strong>. Ese indicador se llama <strong>OTIF</strong>.">Kilómetros recorridos</button>
+      </div>
+      <div class="fb-explanation" id="fb-explanation"></div>
+      <button class="btn btn-primary fb-continue" id="fb-continue">Finalizar experiencia 🏁</button>
+    </div>
+  </div>
+
+  <!-- ═══════════ CELEBRATION MODAL ═══════════ -->
+  <div class="celebration-overlay" id="celebration-overlay">
+    <div class="celebration-modal">
+      <div class="celebration-confetti">
+        <span>🎉</span><span>⭐</span><span>🎊</span><span>🏆</span><span>✨</span><span>🎉</span>
+      </div>
+      <div class="celebration-content">
+        <div class="celebration-trophy">🏆</div>
+        <h2 class="celebration-title">¡Experiencia completada!</h2>
+        <p class="celebration-subtitle">Has coordinado los <strong>3 conceptos fundamentales</strong> de la Ingeniería Industrial aplicándolos al caso de <strong>Cervecería UA</strong>.</p>
+
+        <div class="celebration-retos">
+          <div class="celebration-reto">
+            <div class="celebration-reto-icon">⚙️</div>
+            <div class="celebration-reto-name">Proceso</div>
+            <div class="celebration-reto-desc">TOC · Cuello de botella</div>
+            <div class="celebration-reto-check">✓</div>
+          </div>
+          <div class="celebration-reto">
+            <div class="celebration-reto-icon">✅</div>
+            <div class="celebration-reto-name">Calidad</div>
+            <div class="celebration-reto-desc">Mejora continua · PHVA</div>
+            <div class="celebration-reto-check">✓</div>
+          </div>
+          <div class="celebration-reto">
+            <div class="celebration-reto-icon">🚚</div>
+            <div class="celebration-reto-name">Logística</div>
+            <div class="celebration-reto-desc">Cadena de suministro</div>
+            <div class="celebration-reto-check">✓</div>
+          </div>
+        </div>
+
+        <div class="celebration-message">
+          <strong>🦉 Hugui:</strong> Acabas de vivir lo que hace un ingeniero industrial todos los días — equilibrar proceso, calidad y logística como un sistema completo. ¡Gracias por acompañarnos!
+        </div>
+
+        <div class="celebration-countdown">
+          <div class="countdown-text">Volviendo al módulo en <strong id="countdown-num">15</strong> segundos</div>
+          <div class="countdown-bar"><div class="countdown-fill" id="countdown-fill"></div></div>
+        </div>
+
+        <button class="btn btn-primary celebration-btn" id="celebration-btn">Volver al módulo ahora →</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+  // ════════════════════════════════════════════════════════════
+  // MODELO
+  // ════════════════════════════════════════════════════════════
+  const DESTINATIONS = [
+    { id:1, name:'Bar Universitario',     icon:'🍻', client:'Evento fin de semestre', cases:80,  day:'viernes', time:'14:00', priority:3, x:-5, z:-3, color:0xE67E22 },
+    { id:2, name:'Supermercado Central',  icon:'🏪', client:'Orden periódica',         cases:100, day:'viernes', time:'17:00', priority:2, x:5,  z:-3, color:0x2980B9 },
+    { id:3, name:'Distribuidor Regional', icon:'📦', client:'Reposición semanal',      cases:160, day:'sabado',  time:'12:00', priority:2, x:-5, z:3,  color:0x8b6914 },
+    { id:4, name:'Tienda de Barrio',      icon:'🏬', client:'Pedido nuevo',            cases:40,  day:'sabado',  time:'18:00', priority:1, x:5,  z:3,  color:0x9B59B6 }
+  ];
+
+  const TRUCKS = [
+    { id:'viernes', name:'Camión Viernes', capacity:200, day:'viernes', color:0x27AE60 },
+    { id:'sabado',  name:'Camión Sábado',  capacity:200, day:'sabado',  color:0xE67E22 }
+  ];
+
+  // Helper de display (para mostrar con tilde donde corresponde)
+  const DAY_LABELS = { viernes: 'Viernes', sabado: 'Sábado' };
+  const dayDisplay = (day) => DAY_LABELS[day] || day;
+
+  let state = {
+    step: 1,
+    destinations: DESTINATIONS.map(d => ({ ...d, reviewed:false, truck:null, routeOrder:null })),
+    currentReviewingIdx: null,
+    currentRouteTruck: null,
+    won: false
+  };
+
+  const reviewedCount = () => state.destinations.filter(d => d.reviewed).length;
+  const assignedCount = () => state.destinations.filter(d => d.truck).length;
+  const truckLoad = (truckId) => state.destinations.filter(d => d.truck === truckId).reduce((s,d) => s+d.cases, 0);
+  const truckDests = (truckId) => state.destinations.filter(d => d.truck === truckId);
+  const routesCount = () => TRUCKS.filter(t => {
+    const ds = truckDests(t.id);
+    return ds.length > 0 && ds.every(d => d.routeOrder !== null);
+  }).length;
+
+  // ════════════════════════════════════════════════════════════
+  // THREE.JS - Mapa de distribución
+  // ════════════════════════════════════════════════════════════
+  const container = document.getElementById('scene-container');
+  const canvas = document.getElementById('scene-canvas');
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true });
+  renderer.setPixelRatio(window.devicePixelRatio);
+
+  const scene = new THREE.Scene();
+  scene.background = null;
+
+  const frustumSize = 13;
+  const camera = new THREE.OrthographicCamera();
+  function updateCameraFrustum(){
+    const w = container.clientWidth, h = container.clientHeight;
+    const aspect = w / h;
+    camera.left = -frustumSize*aspect/2;
+    camera.right = frustumSize*aspect/2;
+    camera.top = frustumSize/2;
+    camera.bottom = -frustumSize/2;
+    camera.near = 0.1; camera.far = 100;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
+  }
+  camera.position.set(8, 13, 8);
+  camera.lookAt(0, 0, 0);
+  updateCameraFrustum();
+
+  scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+  const sun = new THREE.DirectionalLight(0xfff0d8, 0.6);
+  sun.position.set(6, 15, 5); scene.add(sun);
+  const fill = new THREE.DirectionalLight(0xaaccff, 0.25);
+  fill.position.set(-6, 10, -4); scene.add(fill);
+
+  // Piso (mapa)
+  const mapSize = 18;
+  const floor = new THREE.Mesh(new THREE.BoxGeometry(mapSize, 0.3, mapSize*0.7), new THREE.MeshLambertMaterial({ color:0x9bc49b }));
+  floor.position.y = -0.15; scene.add(floor);
+
+  // Caminos (roads) conectando brewery a cada destino
+  function createRoad(x1, z1, x2, z2){
+    const len = Math.sqrt((x2-x1)**2 + (z2-z1)**2);
+    const road = new THREE.Mesh(
+      new THREE.BoxGeometry(len, 0.05, 0.8),
+      new THREE.MeshLambertMaterial({ color:0x6e6e6e })
+    );
+    road.position.set((x1+x2)/2, 0.03, (z1+z2)/2);
+    road.rotation.y = -Math.atan2(z2-z1, x2-x1);
+    scene.add(road);
+    // Líneas centrales
+    for (let k = 0; k < Math.floor(len); k++){
+      const t = (k + 0.5) / len;
+      const stripe = new THREE.Mesh(
+        new THREE.BoxGeometry(0.3, 0.06, 0.08),
+        new THREE.MeshLambertMaterial({ color:0xf0d060 })
+      );
+      stripe.position.set(x1 + (x2-x1)*t, 0.055, z1 + (z2-z1)*t);
+      stripe.rotation.y = -Math.atan2(z2-z1, x2-x1);
+      scene.add(stripe);
+    }
+  }
+
+  // Cervecería (brewery) - centro
+  const breweryGroup = new THREE.Group();
+  breweryGroup.position.set(0, 0, 0);
+  // Base
+  const brewBase = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.4, 2.2), new THREE.MeshLambertMaterial({ color:0x8b6914 }));
+  brewBase.position.y = 0.2; breweryGroup.add(brewBase);
+  // Cuerpo
+  const brewBody = new THREE.Mesh(new THREE.BoxGeometry(1.8, 1.6, 1.8), new THREE.MeshLambertMaterial({ color:0xC0392B }));
+  brewBody.position.y = 1.2; breweryGroup.add(brewBody);
+  // Techo
+  const brewRoof = new THREE.Mesh(new THREE.BoxGeometry(2, 0.3, 2), new THREE.MeshLambertMaterial({ color:0x5a4a2a }));
+  brewRoof.position.y = 2.15; breweryGroup.add(brewRoof);
+  // Chimenea
+  const chimney = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.8, 0.4), new THREE.MeshLambertMaterial({ color:0x3a2a10 }));
+  chimney.position.set(0.5, 2.7, 0.5); breweryGroup.add(chimney);
+  // Cartel
+  const brewCanvas = document.createElement('canvas');
+  brewCanvas.width = 384; brewCanvas.height = 72;
+  const bc = brewCanvas.getContext('2d');
+  bc.fillStyle = 'rgba(58,42,16,0.92)'; roundRect(bc,0,0,384,72,10); bc.fill();
+  bc.fillStyle = '#fff'; bc.font = 'bold 28px "Google Sans", sans-serif';
+  bc.textAlign = 'center'; bc.textBaseline = 'middle';
+  bc.fillText('🍺 CERVECERÍA UA', 192, 36);
+  const brewTex = new THREE.CanvasTexture(brewCanvas);
+  const brewSign = new THREE.Sprite(new THREE.SpriteMaterial({ map:brewTex, transparent:true }));
+  brewSign.scale.set(3.6, 0.68, 1); brewSign.position.y = 3.3;
+  breweryGroup.add(brewSign);
+  scene.add(breweryGroup);
+
+  function roundRect(ctx, x, y, w, h, r){
+    ctx.beginPath();
+    ctx.moveTo(x+r, y);
+    ctx.arcTo(x+w, y, x+w, y+h, r);
+    ctx.arcTo(x+w, y+h, x, y+h, r);
+    ctx.arcTo(x, y+h, x, y, r);
+    ctx.arcTo(x, y, x+w, y, r);
+    ctx.closePath();
+  }
+
+  // Destinos
+  const destMeshes = [];
+  state.destinations.forEach((d, i) => {
+    createRoad(0, 0, d.x, d.z);
+    const g = new THREE.Group();
+    g.position.set(d.x, 0, d.z);
+
+    const base = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.3, 1.4), new THREE.MeshLambertMaterial({ color:0x8b7340 }));
+    base.position.y = 0.15; g.add(base);
+
+    const bodyMat = new THREE.MeshLambertMaterial({ color:d.color });
+    const body = new THREE.Mesh(new THREE.BoxGeometry(1.1, 1, 1.1), bodyMat);
+    body.position.y = 0.8;
+    body.userData.idx = i;
+    g.add(body);
+
+    const roof = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.2, 1.3), new THREE.MeshLambertMaterial({ color:0x5a4a2a }));
+    roof.position.y = 1.4; g.add(roof);
+
+    // Label con info
+    const dc = document.createElement('canvas');
+    dc.width = 320; dc.height = 108;
+    const dcx = dc.getContext('2d');
+    drawDestLabel(dcx, d, false);
+    const dTex = new THREE.CanvasTexture(dc);
+    dTex.minFilter = THREE.LinearFilter;
+    const dSprite = new THREE.Sprite(new THREE.SpriteMaterial({ map:dTex, transparent:true }));
+    dSprite.scale.set(2.6, 0.88, 1); dSprite.position.y = 2.4;
+    g.add(dSprite);
+
+    // Collider más grande
+    const collider = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.6, 1.6), new THREE.MeshBasicMaterial({ visible:false }));
+    collider.position.y = 0.8;
+    collider.userData.idx = i;
+    g.add(collider);
+
+    scene.add(g);
+    destMeshes.push({ group:g, body, bodyMat, data:d, labelCanvas:dc, labelTex:dTex, collider });
+  });
+
+  function drawDestLabel(ctx, d, reviewed){
+    ctx.clearRect(0, 0, 320, 108);
+    ctx.fillStyle = reviewed ? 'rgba(41,128,185,0.92)' : 'rgba(58,42,16,0.92)';
+    roundRect(ctx, 0, 0, 320, 108, 12); ctx.fill();
+    ctx.fillStyle = '#f5e6c8';
+    ctx.font = 'bold 24px "Google Sans", sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(d.icon + ' ' + d.name, 160, 28);
+    ctx.font = 'bold 18px "Google Sans", sans-serif';
+    ctx.fillStyle = '#ffcc77';
+    ctx.fillText(d.cases + ' cajas', 160, 58);
+    ctx.font = '16px "Google Sans", sans-serif';
+    ctx.fillStyle = reviewed ? '#f5e6c8' : '#aaa';
+    const st = state.destinations.find(x => x.id === d.id);
+    const assignText = st && st.truck ? ` · ${st.truck === 'viernes' ? '🟢 Vie' : '🟠 Sáb'}` : '';
+    ctx.fillText(dayDisplay(d.day) + ' ' + d.time + assignText, 160, 84);
+  }
+
+  function refreshDestLabels(){
+    destMeshes.forEach(m => {
+      const st = state.destinations.find(d => d.id === m.data.id);
+      drawDestLabel(m.labelCanvas.getContext('2d'), m.data, st.reviewed);
+      m.labelTex.needsUpdate = true;
+    });
+  }
+  refreshDestLabels();
+
+  // Camiones
+  const truckMeshes = [];
+  TRUCKS.forEach((t, i) => {
+    const g = new THREE.Group();
+    g.position.set(-1.5 + i*3, 0.4, 2.5);
+    // Cabina
+    const cab = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.7, 1), new THREE.MeshLambertMaterial({ color:t.color }));
+    cab.position.set(0.6, 0.35, 0); g.add(cab);
+    // Caja
+    const box = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.8, 1.1), new THREE.MeshLambertMaterial({ color:0xf5e6c8 }));
+    box.position.set(-0.4, 0.4, 0); g.add(box);
+    // Ruedas
+    [[-0.8,-0.55],[-0.8,0.55],[0.6,-0.55],[0.6,0.55]].forEach(p => {
+      const w = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.25, 0.15), new THREE.MeshLambertMaterial({ color:0x222 }));
+      w.position.set(p[0], 0, p[1]); g.add(w);
+    });
+    scene.add(g);
+    truckMeshes.push({ group:g, data:t, startPos:g.position.clone() });
+  });
+
+  // Raycaster
+  const raycaster = new THREE.Raycaster();
+  const mouse = new THREE.Vector2();
+  canvas.addEventListener('click', (e) => {
+    if (state.step !== 1 || state.won) return;
+    const rect = canvas.getBoundingClientRect();
+    mouse.x = ((e.clientX-rect.left)/rect.width)*2 - 1;
+    mouse.y = -((e.clientY-rect.top)/rect.height)*2 + 1;
+    raycaster.setFromCamera(mouse, camera);
+    const hits = raycaster.intersectObjects(destMeshes.map(m => m.collider));
+    if (hits.length > 0) onDestClick(hits[0].object.userData.idx);
+  });
+  canvas.addEventListener('pointermove', (e) => {
+    if (state.step !== 1){ canvas.style.cursor = 'grab'; return; }
+    const rect = canvas.getBoundingClientRect();
+    mouse.x = ((e.clientX-rect.left)/rect.width)*2 - 1;
+    mouse.y = -((e.clientY-rect.top)/rect.height)*2 + 1;
+    raycaster.setFromCamera(mouse, camera);
+    const hits = raycaster.intersectObjects(destMeshes.map(m => m.collider));
+    canvas.style.cursor = hits.length > 0 ? 'pointer' : 'grab';
+  });
+
+  let isDragging = false, dragStart = { x:0, angle:0 };
+  let cameraAngle = Math.PI / 4;
+  canvas.addEventListener('pointerdown', (e) => { isDragging = true; dragStart.x = e.clientX; dragStart.angle = cameraAngle; });
+  window.addEventListener('pointerup', () => { isDragging = false; });
+  window.addEventListener('pointermove', (e) => {
+    if (!isDragging) return;
+    const dx = e.clientX - dragStart.x;
+    cameraAngle = dragStart.angle + dx * 0.005;
+    cameraAngle = Math.max(Math.PI*0.15, Math.min(Math.PI*0.5, cameraAngle));
+    const r = Math.sqrt(64+64);
+    camera.position.x = r * Math.sin(cameraAngle) * Math.cos(Math.PI/6);
+    camera.position.z = r * Math.cos(cameraAngle) * Math.cos(Math.PI/6);
+    camera.lookAt(0, 0, 0);
+  });
+
+  const tempVec = new THREE.Vector3();
+  function worldToScreen(x, y, z){
+    tempVec.set(x, y, z).project(camera);
+    const rect = canvas.getBoundingClientRect();
+    return { x:(tempVec.x*0.5+0.5)*rect.width, y:(-tempVec.y*0.5+0.5)*rect.height };
+  }
+
+  let pointerTarget = null;
+  function setPointer(x, y, z, text){
+    pointerTarget = { x, y, z };
+    document.getElementById('pointer-text').textContent = text;
+    document.getElementById('scene-pointer').classList.add('visible');
+  }
+  function hidePointer(){ pointerTarget = null; document.getElementById('scene-pointer').classList.remove('visible'); }
+  function updatePointerPosition(){
+    if (!pointerTarget) return;
+    const s = worldToScreen(pointerTarget.x, pointerTarget.y, pointerTarget.z);
+    const p = document.getElementById('scene-pointer');
+    p.style.left = s.x + 'px';
+    p.style.top = (s.y - 14) + 'px';
+  }
+
+  // Animación
+  function animate(){
+    requestAnimationFrame(animate);
+    if (state.step === 1){
+      const t = performance.now() * 0.002;
+      destMeshes.forEach((m, i) => {
+        if (!state.destinations[i].reviewed){
+          m.group.position.y = Math.sin(t + i * 0.8) * 0.08;
+        } else {
+          m.group.position.y = 0;
+        }
+      });
+    }
+    updatePointerPosition();
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  window.addEventListener('resize', updateCameraFrustum);
+
+  // ════════════════════════════════════════════════════════════
+  // UI LOGIC
+  // ════════════════════════════════════════════════════════════
+  const $ = (id) => document.getElementById(id);
+  function setHugui(t){ $('hugui-text').innerHTML = t; }
+
+  function setStep(n){
+    state.step = n;
+    document.querySelectorAll('.step-item').forEach(el => {
+      const s = parseInt(el.dataset.step);
+      el.classList.toggle('active', s === n);
+      el.classList.toggle('done', s < n);
+    });
+    document.querySelectorAll('.step-divider').forEach((el, idx) => {
+      el.classList.toggle('done', idx < n - 1);
+    });
+    updatePointer();
+  }
+
+  function updatePointer(){
+    if (state.won || state.step !== 1){ hidePointer(); return; }
+    const next = state.destinations.find(d => !d.reviewed);
+    if (next){
+      setPointer(next.x, 3.2, next.z, 'Click para revisar');
+    } else {
+      hidePointer();
+    }
+  }
+
+  function renderMinicards(){
+    const grid = $('minicards-grid');
+    grid.innerHTML = '';
+    state.destinations.forEach(d => {
+      const slot = document.createElement('div');
+      slot.className = 'mini-slot';
+      if (d.reviewed) slot.classList.add('reviewed');
+      if (d.truck === 'viernes') slot.classList.add('assigned-v');
+      if (d.truck === 'sabado') slot.classList.add('assigned-s');
+      const stars = '⭐'.repeat(d.priority);
+      const tagHtml = d.truck ? `<span class="mini-slot-tag ${d.truck === 'viernes' ? 'v' : 's'}">${d.truck === 'viernes' ? 'VIE' : 'SÁB'}</span>` : '';
+      slot.innerHTML = `<span class="mini-slot-icon">${d.icon}</span><span class="mini-slot-name">${d.name}</span>${tagHtml}`;
+      grid.appendChild(slot);
+    });
+  }
+
+  function renderMetrics(){
+    $('reviewed-value').textContent = reviewedCount() + ' / 4';
+    $('metric-reviewed').classList.toggle('success', reviewedCount() === 4);
+    $('assigned-value').textContent = assignedCount() + ' / 4';
+    $('routes-value').textContent = routesCount() + ' / 2';
+    const btn = $('btn-next');
+    if (state.step === 1){
+      btn.disabled = reviewedCount() < 4;
+      btn.textContent = reviewedCount() < 4 ? `Revisa ${4-reviewedCount()} más →` : 'Asignar a camiones →';
+      btn.classList.toggle('ready', reviewedCount() === 4);
+    } else if (state.step === 4 && state.won){
+      btn.disabled = false;
+      btn.textContent = 'Ver reflexión →';
+      btn.classList.add('ready');
+    } else {
+      btn.disabled = true;
+      btn.textContent = 'Continuar →';
+      btn.classList.remove('ready');
+    }
+  }
+
+  // ── STEP 1: revisar ──
+  function onDestClick(idx){
+    state.currentReviewingIdx = idx;
+    const d = state.destinations[idx];
+    $('order-title').textContent = d.icon + ' ' + d.name;
+    const stars = '⭐'.repeat(d.priority);
+    $('order-content').innerHTML = `
+      <div class="order-card-big">
+        <div class="order-head">
+          <div style="display:flex;gap:12px;align-items:center">
+            <div class="order-icon">${d.icon}</div>
+            <div>
+              <div class="order-name">${d.name}</div>
+              <div class="order-client">${d.client}</div>
+            </div>
+          </div>
+          <div class="order-stars">${stars}</div>
+        </div>
+        <div class="order-stats">
+          <div class="order-stat">
+            <div class="order-stat-label">📦 Cajas</div>
+            <div class="order-stat-value">${d.cases}</div>
+          </div>
+          <div class="order-stat">
+            <div class="order-stat-label">📅 Día</div>
+            <div class="order-stat-value" style="font-size:12px">${dayDisplay(d.day)}</div>
+          </div>
+          <div class="order-stat">
+            <div class="order-stat-label">🕐 Hora</div>
+            <div class="order-stat-value">${d.time}</div>
+          </div>
+        </div>
+      </div>
+    `;
+    $('order-modal').classList.add('visible');
+    $('order-overlay').classList.add('visible');
+  }
+
+  $('order-ok').addEventListener('click', () => {
+    const idx = state.currentReviewingIdx;
+    state.destinations[idx].reviewed = true;
+    $('order-modal').classList.remove('visible');
+    $('order-overlay').classList.remove('visible');
+    refreshDestLabels();
+    renderMinicards();
+    renderMetrics();
+    updatePointer();
+    const rem = 4 - reviewedCount();
+    if (rem === 0){
+      setHugui(`¡<strong>Revisados los 4 pedidos</strong>! Ahora hay que <strong>asignar cada uno al camión correcto</strong> (Viernes o Sábado) respetando la capacidad. Click en Continuar.`);
+    } else {
+      setHugui(`Pedido registrado. <strong>Faltan ${rem}</strong>. La flecha azul te indica cuál falta por revisar.`);
+    }
+  });
+  $('order-close').addEventListener('click', () => {
+    $('order-modal').classList.remove('visible');
+    $('order-overlay').classList.remove('visible');
+  });
+
+  // ── STEP 2: asignar ──
+  function openAssign(){
+    renderTrucksStatus();
+    renderAssignOrders();
+    $('assign-modal').classList.add('visible');
+    $('assign-overlay').classList.add('visible');
+    setHugui(`Ahora asigna cada pedido. Recuerda: <strong>los pedidos del viernes NO pueden ir en el camión del sábado</strong> (y viceversa). Mira las barras de capacidad — no excedas 200 cajas por camión.`);
+  }
+
+  function renderTrucksStatus(){
+    const box = $('trucks-status');
+    box.innerHTML = '';
+    TRUCKS.forEach(t => {
+      const load = truckLoad(t.id);
+      const pct = Math.min(100, (load / t.capacity) * 100);
+      const over = load > t.capacity;
+      const card = document.createElement('div');
+      card.className = 'truck-card ' + t.id;
+      card.innerHTML = `
+        <h4>${t.id === 'viernes' ? '🟢' : '🟠'} 🚛 ${t.name}</h4>
+        <div class="truck-bar"><div class="truck-bar-fill ${over?'over':''}" style="width:${pct}%">${load>0?load:''}</div></div>
+        <div class="truck-detail ${over?'over':''}">${load} / ${t.capacity} cajas${over?' · ⚠ EXCEDIDO':''}</div>
+      `;
+      box.appendChild(card);
+    });
+  }
+
+  function renderAssignOrders(){
+    const box = $('assign-orders');
+    box.innerHTML = '';
+    state.destinations.forEach((d, i) => {
+      const row = document.createElement('div');
+      const isWrongDay = d.truck && d.truck !== d.day;
+      const isOk = d.truck && d.truck === d.day;
+      row.className = 'assign-row' + (isOk ? ' done-ok' : '') + (isWrongDay ? ' done-wrong' : '');
+      const stars = '⭐'.repeat(d.priority);
+      const dayClass = d.day === 'viernes' ? 'viernes' : 'sabado';
+      const dayLabel = d.day === 'viernes' ? '📅 Viernes' : '📅 Sábado';
+      row.innerHTML = `
+        <div class="assign-row-top">
+          <div class="assign-row-icon">${d.icon}</div>
+          <div class="assign-row-body">
+            <div class="assign-row-name">${d.name}<span class="assign-row-stars">${stars}</span></div>
+            <div class="assign-row-detail">📦 ${d.cases} cajas · 🕐 entrega el ${dayDisplay(d.day)} a las ${d.time}</div>
+          </div>
+          <div class="day-badge ${dayClass}">${dayLabel}</div>
+        </div>
+        <div class="assign-row-bottom">
+          <span class="assign-row-prompt">Enviar en:</span>
+          <div class="assign-buttons">
+            <button class="assign-btn viernes ${d.truck==='viernes'?'selected':''} ${d.truck==='viernes' && d.day!=='viernes'?'wrong':''}" data-idx="${i}" data-truck="viernes">🟢 Camión Viernes</button>
+            <button class="assign-btn sabado ${d.truck==='sabado'?'selected':''} ${d.truck==='sabado' && d.day!=='sabado'?'wrong':''}" data-idx="${i}" data-truck="sabado">🟠 Camión Sábado</button>
+          </div>
+        </div>
+      `;
+      row.querySelectorAll('.assign-btn').forEach(btn => {
+        btn.addEventListener('click', () => assignOrder(parseInt(btn.dataset.idx), btn.dataset.truck));
+      });
+      box.appendChild(row);
+    });
+    updateAssignContinue();
+  }
+
+  function assignOrder(idx, truck){
+    const d = state.destinations[idx];
+    const warning = $('assign-warning');
+    if (d.truck === truck){
+      d.truck = null;
+      warning.classList.remove('visible');
+    } else {
+      d.truck = truck;
+      d.routeOrder = null;
+      // Verificar día incorrecto → feedback inmediato
+      if (d.day !== truck){
+        warning.innerHTML = `<strong>⚠ Día equivocado:</strong> <strong>${d.name}</strong> debe entregarse el <strong>${dayDisplay(d.day)}</strong>, así que debe ir en el <strong>camión del ${dayDisplay(d.day)}</strong>. Si lo mandas el ${dayDisplay(truck)}, el cliente recibirá ${d.day === 'viernes' ? 'un día tarde' : 'un día antes, cuando aún no lo necesita'}.`;
+        warning.classList.add('visible');
+        setHugui(`¡Ojo! Mira el <strong>badge 📅</strong> de cada pedido — ese es el día comprometido con el cliente. Si asignas al camión del día equivocado, la entrega fallará.`);
+      } else {
+        warning.classList.remove('visible');
+        setHugui(`✓ <strong>${d.name}</strong> asignado al camión del ${dayDisplay(truck)}. Sigue con los demás pedidos.`);
+      }
+    }
+    renderTrucksStatus();
+    renderAssignOrders();
+    refreshDestLabels();
+    renderMinicards();
+    renderMetrics();
+  }
+
+  function updateAssignContinue(){
+    const btn = $('assign-continue');
+    const allAssigned = state.destinations.every(d => d.truck);
+    const pendingCount = 4 - state.destinations.filter(d => d.truck).length;
+    const wrongDayOrders = state.destinations.filter(d => d.truck && d.truck !== d.day);
+    const overCapacityTrucks = TRUCKS.filter(t => truckLoad(t.id) > t.capacity);
+
+    if (!allAssigned){
+      btn.disabled = true;
+      btn.textContent = `Faltan ${pendingCount} pedido${pendingCount!==1?'s':''} por asignar`;
+      return;
+    }
+    if (wrongDayOrders.length > 0){
+      btn.disabled = true;
+      btn.textContent = `⚠ ${wrongDayOrders.length} pedido${wrongDayOrders.length!==1?'s':''} en el camión del día equivocado`;
+      return;
+    }
+    if (overCapacityTrucks.length > 0){
+      btn.disabled = true;
+      const t = overCapacityTrucks[0];
+      btn.textContent = `⚠ Camión ${t.name.split(' ')[1]} excede capacidad (${truckLoad(t.id)}/${t.capacity})`;
+      return;
+    }
+    btn.disabled = false;
+    btn.textContent = '✓ Continuar a planeación de rutas →';
+  }
+
+  $('assign-continue').addEventListener('click', () => {
+    $('assign-modal').classList.remove('visible');
+    $('assign-overlay').classList.remove('visible');
+    setStep(3);
+    openRoute();
+  });
+
+  // ── STEP 3: rutas ──
+  function openRoute(){
+    renderRouteContent();
+    $('route-modal').classList.add('visible');
+    $('route-overlay').classList.add('visible');
+    setHugui(`Para cada camión, haz click en los destinos <strong>en el orden que los visitará</strong>. Pista: quien tenga la hora de entrega más temprana debe ir primero.`);
+  }
+
+  function renderRouteContent(){
+    const box = $('route-content');
+    box.innerHTML = '';
+    TRUCKS.forEach(t => {
+      const dests = truckDests(t.id);
+      if (dests.length === 0) return;
+      const card = document.createElement('div');
+      card.className = 'route-truck ' + t.id;
+      card.innerHTML = `
+        <h4>🚛 ${t.name} <button class="route-reset" data-tid="${t.id}">↺ Reiniciar orden</button></h4>
+        <div class="route-dests"></div>
+      `;
+      const destsBox = card.querySelector('.route-dests');
+      dests.forEach(d => {
+        const row = document.createElement('div');
+        row.className = 'route-dest' + (d.routeOrder ? ' picked' : '');
+        row.innerHTML = `
+          <div class="route-order">${d.routeOrder || '?'}</div>
+          <div class="route-dest-icon">${d.icon}</div>
+          <div class="route-dest-body">
+            <div class="route-dest-name">${d.name}</div>
+            <div class="route-dest-deadline">Entrega: ${dayDisplay(d.day)} ${d.time}</div>
+          </div>
+        `;
+        row.addEventListener('click', () => pickRouteOrder(t.id, d.id));
+        destsBox.appendChild(row);
+      });
+      card.querySelector('.route-reset').addEventListener('click', (e) => {
+        e.stopPropagation();
+        truckDests(t.id).forEach(d => { d.routeOrder = null; });
+        renderRouteContent();
+      });
+      box.appendChild(card);
+    });
+    updateRouteContinue();
+  }
+
+  function pickRouteOrder(truckId, destId){
+    const dests = truckDests(truckId);
+    const d = dests.find(x => x.id === destId);
+    if (d.routeOrder){ return; } // ya asignado
+    const nextNum = dests.filter(x => x.routeOrder !== null).length + 1;
+    d.routeOrder = nextNum;
+    renderRouteContent();
+  }
+
+  function updateRouteContinue(){
+    const ok = TRUCKS.every(t => {
+      const ds = truckDests(t.id);
+      return ds.length === 0 || ds.every(d => d.routeOrder !== null);
+    });
+    const btn = $('route-continue');
+    btn.disabled = !ok;
+    btn.textContent = ok ? '🚛 Confirmar rutas y despachar' : 'Ordena todos los destinos';
+  }
+
+  $('route-continue').addEventListener('click', () => {
+    $('route-modal').classList.remove('visible');
+    $('route-overlay').classList.remove('visible');
+    setStep(4);
+    simulateDispatch();
+  });
+
+  // ── STEP 4: despachar ──
+  async function simulateDispatch(){
+    setHugui(`<strong>Despachando...</strong> observa los camiones moverse por el mapa.`);
+    // Calcular resultados ANTES de la animación para mostrar luego
+    const results = computeResults();
+    // Animar cada camión visitando sus destinos
+    for (const t of TRUCKS){
+      const dests = truckDests(t.id).sort((a,b) => a.routeOrder - b.routeOrder);
+      if (dests.length === 0) continue;
+      const mesh = truckMeshes.find(m => m.data.id === t.id);
+      await animateTruck(mesh, dests);
+      // Volver al origen
+      await moveTruckTo(mesh, mesh.startPos.x, mesh.startPos.z, 900);
+    }
+    // Mostrar resultados
+    showResults(results);
+  }
+
+  function moveTruckTo(mesh, tx, tz, duration=1200){
+    return new Promise(resolve => {
+      const start = mesh.group.position.clone();
+      const t0 = performance.now();
+      function step(){
+        const t = (performance.now() - t0) / duration;
+        if (t >= 1){
+          mesh.group.position.set(tx, start.y, tz);
+          resolve();
+          return;
+        }
+        const k = 0.5 - 0.5 * Math.cos(Math.PI * t); // ease
+        mesh.group.position.set(
+          start.x + (tx - start.x) * k,
+          start.y,
+          start.z + (tz - start.z) * k
+        );
+        // rotación hacia el objetivo
+        mesh.group.rotation.y = -Math.atan2(tz - start.z, tx - start.x);
+        requestAnimationFrame(step);
+      }
+      step();
+    });
+  }
+
+  async function animateTruck(mesh, dests){
+    for (const d of dests){
+      await moveTruckTo(mesh, d.x, d.z, 1400);
+      // Pausa breve "descargando"
+      showFloater(d.x, 2, d.z, '📦 Entrega', '#27AE60');
+      await new Promise(r => setTimeout(r, 500));
+    }
+  }
+
+  function showFloater(wx, wy, wz, text, color){
+    const s = worldToScreen(wx, wy, wz);
+    const f = document.createElement('div');
+    f.className = 'floater';
+    f.textContent = text;
+    f.style.color = color;
+    f.style.left = s.x + 'px';
+    f.style.top = s.y + 'px';
+    container.appendChild(f);
+    setTimeout(() => f.remove(), 1500);
+  }
+
+  function computeResults(){
+    // OTIF = % de pedidos entregados completos y a tiempo
+    // On-time: el día correcto Y respetando el orden (temprano antes que tarde)
+    // In-full: el día correcto
+    let onTimeInFull = 0;
+    const details = [];
+    state.destinations.forEach(d => {
+      const correctDay = d.truck === d.day;
+      const dests = truckDests(d.truck).sort((a,b) => a.routeOrder - b.routeOrder);
+      // Verificar que el orden respeta deadlines (timearly primero)
+      let onTime = correctDay;
+      if (correctDay){
+        // Obtener la posición en la ruta
+        const myIdx = dests.findIndex(x => x.id === d.id);
+        // Si hay algún otro en la misma ruta con hora MÁS TEMPRANA pero está DESPUÉS, entonces este llega tarde
+        for (let i = myIdx + 1; i < dests.length; i++){
+          if (dests[i].time < d.time){ onTime = false; break; }
+        }
+      }
+      const inFull = correctDay; // asumimos que si va en el camión correcto, llega completo
+      const success = onTime && inFull;
+      if (success) onTimeInFull++;
+      details.push({ d, onTime, inFull, success });
+    });
+    const otif = Math.round((onTimeInFull / state.destinations.length) * 100);
+    return { otif, onTimeInFull, total:state.destinations.length, details };
+  }
+
+  function showResults(results){
+    $('otif-value').textContent = results.otif + '%';
+    $('otif-value').style.color = results.otif >= 75 ? '#1E8449' : results.otif >= 50 ? '#E67E22' : '#E74C3C';
+    $('metric-otif').classList.add(results.otif >= 75 ? 'success' : 'warning');
+    $('results-summary').innerHTML = `Despachaste <strong>${results.onTimeInFull} de ${results.total}</strong> pedidos de forma exitosa (a tiempo y completos). El OTIF final es de <strong>${results.otif}%</strong>.`;
+    const kpis = $('results-kpis');
+    kpis.innerHTML = `
+      <div class="kpi-big ${results.otif >= 75 ? 'success' : 'warning'}">
+        <div class="kpi-big-label">OTIF</div>
+        <div class="kpi-big-value">${results.otif}%</div>
+        <div class="kpi-big-sub">${results.onTimeInFull}/${results.total} exitosos</div>
+      </div>
+      <div class="kpi-big">
+        <div class="kpi-big-label">Camiones</div>
+        <div class="kpi-big-value">${TRUCKS.filter(t => truckDests(t.id).length > 0).length}/2</div>
+        <div class="kpi-big-sub">en ruta</div>
+      </div>
+      <div class="kpi-big ${results.otif >= 75 ? 'success' : ''}">
+        <div class="kpi-big-label">Clientes felices</div>
+        <div class="kpi-big-value">${results.onTimeInFull}</div>
+        <div class="kpi-big-sub">de ${results.total}</div>
+      </div>
+    `;
+    const detailBox = $('results-detail');
+    detailBox.innerHTML = '<strong>Detalle por pedido:</strong><br>' + results.details.map(r => {
+      const icon = r.success ? '✅' : (r.onTime ? '⚠️' : '❌');
+      const status = r.success ? 'A tiempo y completo' : (r.inFull ? 'Entregado pero fuera de orden/hora' : 'Día incorrecto');
+      return `${icon} ${r.d.icon} <strong>${r.d.name}</strong>: ${status}`;
+    }).join('<br>');
+    setTimeout(() => {
+      $('results-modal').classList.add('visible');
+      $('results-overlay').classList.add('visible');
+    }, 500);
+    setHugui(`El OTIF final es <strong>${results.otif}%</strong>. Cada decisión impactó el resultado.`);
+    state.won = true;
+    renderMetrics();
+  }
+
+  $('results-continue').addEventListener('click', () => {
+    $('results-modal').classList.remove('visible');
+    $('results-overlay').classList.remove('visible');
+    $('feedback-overlay').classList.add('visible');
+  });
+
+  // ── BTN NEXT ──
+  $('btn-next').addEventListener('click', () => {
+    if (state.step === 1 && reviewedCount() === 4){
+      setStep(2);
+      openAssign();
+    } else if (state.step === 4 && state.won){
+      $('feedback-overlay').classList.add('visible');
+    }
+  });
+
+  // ── RESET ──
+  $('btn-reset').addEventListener('click', () => location.reload());
+
+  // ── FEEDBACK ──
+  $('fb-options').addEventListener('click', (e) => {
+    const btn = e.target.closest('.fb-opt'); if (!btn || btn.disabled) return;
+    const correct = btn.dataset.correct === 'true', explain = btn.dataset.explain;
+    document.querySelectorAll('.fb-opt').forEach(b => {
+      b.disabled = true;
+      if (b.dataset.correct === 'true') b.classList.add('correct');
+    });
+    if (!correct) btn.classList.add('chosen-wrong');
+    const exp = $('fb-explanation');
+    exp.innerHTML = explain;
+    exp.classList.add('visible');
+    $('fb-continue').classList.add('visible');
+  });
+  $('fb-continue').addEventListener('click', () => {
+    // Ocultar feedback y mostrar celebración
+    $('feedback-overlay').classList.remove('visible');
+    $('celebration-overlay').classList.add('visible');
+
+    // Cuenta regresiva de 15s con redirect automático
+    const TOTAL_SECONDS = 15;
+    let seconds = TOTAL_SECONDS;
+    $('countdown-num').textContent = seconds;
+    $('countdown-fill').style.width = '100%';
+
+    const intervalId = setInterval(() => {
+      seconds--;
+      if (seconds < 0){
+        clearInterval(intervalId);
+        window.location.href = 'index.html';
+        return;
+      }
+      $('countdown-num').textContent = seconds;
+      $('countdown-fill').style.width = ((seconds / TOTAL_SECONDS) * 100) + '%';
+    }, 1000);
+
+    // Botón para salir antes
+    $('celebration-btn').addEventListener('click', () => {
+      clearInterval(intervalId);
+      window.location.href = 'index.html';
+    }, { once: true });
+  });
+
+  // ── INIT ──
+  renderMinicards();
+  renderMetrics();
+  setStep(1);
+  setTimeout(() => $('observe-overlay').classList.add('visible'), 400);
+  setTimeout(() => updatePointer(), 1200);
+  </script>
+
+</body>
+</html>

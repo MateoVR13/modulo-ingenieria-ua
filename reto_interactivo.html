@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reto Interactivo · Cervecería UA</title>
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --cream:#f5e6c8;
+      --cream-dark:#e8d5aa;
+      --brown:#5a4a2a;
+      --brown-dark:#3a2a10;
+      --brown-light:#8b7340;
+      --gold:#d4a843;
+      --orange:#E67E22;
+      --orange-dark:#CA6F1E;
+      --green:#27AE60;
+      --green-dark:#1E8449;
+      --red:#E74C3C;
+      --red-dark:#922B21;
+    }
+    body{font-family:'Google Sans','DM Sans',sans-serif;background:linear-gradient(180deg,#f5e6c8,#e8d5aa);min-height:100vh;color:var(--brown-dark);overflow:hidden;font-weight:500}
+
+    /* ══════════ HEADER ══════════ */
+    .reto-header{display:flex;align-items:center;gap:20px;padding:14px 28px;background:linear-gradient(180deg,var(--cream),#efe0c0);border-bottom:3px solid var(--brown);box-shadow:0 3px 0 #c4a86a;height:72px;flex-shrink:0}
+    .btn-back{background:var(--brown);color:var(--cream);border:2px solid var(--brown-dark);padding:8px 14px;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;border-radius:6px;letter-spacing:.5px;transition:all .15s;box-shadow:3px 3px 0 var(--brown-dark)}
+    .btn-back:hover{background:var(--brown-light);transform:translate(-2px,-2px);box-shadow:5px 5px 0 var(--brown-dark)}
+    .reto-title{flex:1}
+    .reto-badge{display:inline-block;background:var(--orange);color:#fff;font-size:10px;font-weight:700;letter-spacing:2px;padding:3px 9px;border-radius:3px;text-transform:uppercase;margin-bottom:4px;box-shadow:2px 2px 0 #8b3a0a}
+    .reto-title h1{font-size:18px;font-weight:700;color:var(--brown-dark);letter-spacing:.3px;line-height:1.2}
+
+    /* ══════════ MAIN LAYOUT ══════════ */
+    .reto-main{display:grid;grid-template-columns:340px 1fr;gap:18px;padding:18px;height:calc(100vh - 72px);overflow:hidden}
+
+    /* ══════════ HUGUI SIDE ══════════ */
+    .hugui-side{background:linear-gradient(135deg,var(--cream),#efe0c0,var(--cream-dark));border:3px solid var(--brown);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;box-shadow:5px 5px 0 var(--brown),8px 8px 0 rgba(90,74,42,.3)}
+    .hugui-portrait{width:100%;aspect-ratio:1;max-width:180px;margin:0 auto;background:linear-gradient(180deg,var(--cream-dark),#dcc898);border:3px solid var(--brown);border-radius:10px;display:flex;align-items:center;justify-content:center;padding:8px;box-shadow:inset 0 2px 8px rgba(0,0,0,.12),3px 3px 0 var(--brown-light)}
+    .hugui-portrait img{width:100%;height:100%;object-fit:contain}
+    .hugui-speaker{font-size:11px;font-weight:800;color:var(--brown);letter-spacing:2px;padding-bottom:6px;border-bottom:2px dashed #c4a86a;text-transform:uppercase;margin-top:4px}
+    .hugui-text{font-size:14px;color:var(--brown-dark);line-height:1.55;min-height:120px;font-weight:500}
+    .hugui-text strong{color:var(--orange-dark);font-weight:700}
+    .hugui-hint{background:rgba(230,126,34,.12);border-left:4px solid var(--orange);padding:10px 12px;border-radius:4px;font-size:12px;color:var(--brown);line-height:1.5;margin-top:auto}
+
+    /* ══════════ GAME SIDE ══════════ */
+    .game-side{display:flex;flex-direction:column;gap:12px;overflow:hidden;min-width:0}
+
+    /* ══════════ STEPPER ══════════ */
+    .stepper{display:flex;align-items:center;background:rgba(255,255,255,.6);border:2px solid #8b6914;border-radius:10px;padding:10px 14px;box-shadow:3px 3px 0 #8b6914;gap:4px;flex-shrink:0}
+    .step-item{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+    .step-circle{width:36px;height:36px;border-radius:50%;background:#d4c090;border:3px solid #8b6914;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;transition:all .3s;position:relative}
+    .step-item.active .step-circle{background:var(--orange);border-color:#8b3a0a;color:#fff;animation:pulse-step 1.5s infinite}
+    .step-item.done .step-circle{background:var(--green);border-color:var(--green-dark);color:#fff}
+    .step-item.done .step-circle::after{content:'✓';position:absolute;font-size:18px;font-weight:900;color:#fff}
+    .step-item.done .step-emoji{display:none}
+    @keyframes pulse-step{0%,100%{box-shadow:0 0 0 0 rgba(230,126,34,.55)}70%{box-shadow:0 0 0 10px rgba(230,126,34,0)}}
+    .step-info{min-width:0}
+    .step-label{font-size:9px;font-weight:700;letter-spacing:1.5px;color:var(--brown-light);text-transform:uppercase}
+    .step-item.active .step-label{color:var(--orange-dark)}
+    .step-item.done .step-label{color:var(--green-dark)}
+    .step-name{font-size:13px;font-weight:700;color:var(--brown-dark);line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .step-divider{flex:0 0 auto;width:24px;height:3px;background:#c4a86a;border-radius:2px;margin:0 4px}
+    .step-divider.done{background:var(--green)}
+
+    /* Top metrics */
+    .metrics-top{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;flex-shrink:0}
+    .metric{background:rgba(255,255,255,.55);border:2px solid #8b6914;border-radius:8px;padding:10px 12px;text-align:center;transition:all .3s;box-shadow:3px 3px 0 #8b6914}
+    .metric.warning{border-color:var(--red);box-shadow:3px 3px 0 var(--red-dark)}
+    .metric.success{border-color:var(--green);box-shadow:3px 3px 0 var(--green-dark)}
+    .metric-label{font-size:9px;font-weight:700;letter-spacing:1.4px;color:#8b6914;text-transform:uppercase;margin-bottom:3px}
+    .metric-value{font-size:20px;font-weight:800;color:var(--brown-dark);letter-spacing:.3px;font-variant-numeric:tabular-nums}
+    .metric-sub{font-size:10px;color:var(--brown-light);margin-top:2px;font-weight:500}
+    .metric.warning .metric-value{color:var(--red)}
+    .metric.success .metric-value{color:var(--green)}
+    .metric.budget .metric-value{color:var(--green-dark)}
+    .metric.budget.low .metric-value{color:var(--red)}
+
+    /* 3D Scene */
+    .scene-container{flex:1;background:linear-gradient(180deg,#fff7e0,var(--cream));border:3px solid var(--brown);border-radius:12px;position:relative;overflow:hidden;box-shadow:5px 5px 0 var(--brown),8px 8px 0 rgba(90,74,42,.3);min-height:0}
+    #scene-canvas{width:100%;height:100%;display:block;cursor:grab}
+
+    /* Floating pointer (apunta al objetivo de cada paso) */
+    .scene-pointer{position:absolute;z-index:30;pointer-events:none;transform:translate(-50%,-100%);display:none;animation:bob 1s ease-in-out infinite}
+    .scene-pointer.visible{display:block}
+    @keyframes bob{0%,100%{transform:translate(-50%,-100%)}50%{transform:translate(-50%,calc(-100% - 10px))}}
+    .pointer-bubble{background:var(--orange);color:#fff;padding:6px 12px;border-radius:16px;font-size:12px;font-weight:700;box-shadow:2px 2px 0 #8b3a0a;white-space:nowrap;letter-spacing:.3px}
+    .pointer-arrow{width:0;height:0;margin:0 auto;border-left:10px solid transparent;border-right:10px solid transparent;border-top:14px solid var(--orange);filter:drop-shadow(0 3px 0 #8b3a0a)}
+
+    /* Floaters (textos flotantes sobre la escena) */
+    .floater{position:absolute;font-size:16px;font-weight:800;pointer-events:none;z-index:25;text-shadow:2px 2px 0 rgba(0,0,0,.35);animation:float-up 1.4s ease-out forwards;transform:translate(-50%,0)}
+    @keyframes float-up{0%{opacity:0;transform:translate(-50%,0) scale(.7)}15%{opacity:1;transform:translate(-50%,-14px) scale(1.15)}40%{opacity:1;transform:translate(-50%,-34px) scale(1)}100%{opacity:0;transform:translate(-50%,-80px) scale(.95)}}
+
+    /* Observación overlay (aparece brevemente al inicio) */
+    .observe-overlay{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:40;text-align:center;pointer-events:none;animation:observe-pop 4s ease-out forwards}
+    .observe-overlay.visible{display:block}
+    @keyframes observe-pop{0%{opacity:0;transform:translate(-50%,-50%) scale(.7)}15%,75%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.2)}}
+    .observe-icon{font-size:64px;filter:drop-shadow(4px 4px 0 rgba(0,0,0,.3));margin-bottom:6px}
+    .observe-text{background:rgba(58,42,16,.9);color:var(--cream);padding:10px 22px;border-radius:24px;font-size:15px;font-weight:700;box-shadow:4px 4px 0 rgba(0,0,0,.3);letter-spacing:.5px}
+
+    /* Actions */
+    .actions-bottom{display:flex;gap:12px;justify-content:space-between;align-items:center;flex-shrink:0}
+    .btn{background:var(--brown);color:var(--cream);border:2px solid var(--brown-dark);padding:11px 22px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;border-radius:6px;letter-spacing:.8px;transition:all .15s;box-shadow:4px 4px 0 var(--brown-dark);position:relative}
+    .btn:hover:not(:disabled){background:var(--brown-light);transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--brown-dark)}
+    .btn:active{transform:translate(0,0);box-shadow:2px 2px 0 var(--brown-dark)}
+    .btn-primary{background:linear-gradient(135deg,var(--orange),var(--orange-dark));border-color:#8b3a0a;color:#fff;box-shadow:4px 4px 0 #8b3a0a}
+    .btn-primary:hover:not(:disabled){background:linear-gradient(135deg,var(--orange-dark),#a05813);box-shadow:6px 6px 0 #8b3a0a}
+    .btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:4px 4px 0 var(--brown-dark)}
+    .btn-primary.ready{animation:ready-pulse 1s ease-in-out infinite}
+    @keyframes ready-pulse{0%,100%{transform:translate(0,0);box-shadow:4px 4px 0 #8b3a0a,0 0 0 0 rgba(230,126,34,.6)}50%{transform:translate(-2px,-2px);box-shadow:6px 6px 0 #8b3a0a,0 0 0 12px rgba(230,126,34,0)}}
+    .btn-primary.ready::after{content:'👈 ¡Listo!';position:absolute;left:calc(100% + 12px);top:50%;transform:translateY(-50%);background:var(--green);color:#fff;padding:6px 12px;border-radius:6px;font-size:12px;white-space:nowrap;box-shadow:2px 2px 0 var(--green-dark);animation:wiggle-tip 1.2s ease-in-out infinite}
+    @keyframes wiggle-tip{0%,100%{transform:translateY(-50%) translateX(0)}50%{transform:translateY(-50%) translateX(-6px)}}
+
+    /* ══════════ UPGRADE PANEL ══════════ */
+    .upgrade-overlay{position:fixed;inset:0;background:rgba(58,42,16,.5);display:none;z-index:500;backdrop-filter:blur(2px)}
+    .upgrade-overlay.visible{display:block}
+    .upgrade-panel{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:92%;max-width:560px;background:linear-gradient(135deg,var(--cream),#efe0c0);border:4px solid var(--brown);border-radius:14px;padding:24px;display:none;z-index:501;box-shadow:8px 8px 0 var(--brown-dark),12px 12px 0 rgba(58,42,16,.3);max-height:90vh;overflow-y:auto}
+    .upgrade-panel.visible{display:block;animation:pop-up .3s cubic-bezier(.18,.89,.32,1.28)}
+    @keyframes pop-up{from{transform:translate(-50%,-50%) scale(.8);opacity:0}to{transform:translate(-50%,-50%) scale(1);opacity:1}}
+    .up-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+    .up-header h3{font-size:20px;font-weight:800;color:var(--brown-dark)}
+    .up-close{background:var(--red-dark);color:#fff;border:2px solid #5a1814;width:32px;height:32px;border-radius:50%;font-size:14px;font-weight:700;cursor:pointer;box-shadow:2px 2px 0 #5a1814;transition:all .15s}
+    .up-close:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 #5a1814}
+    .up-intro{background:rgba(39,174,96,.1);border-left:4px solid var(--green);padding:10px 12px;border-radius:4px;margin:10px 0 14px;font-size:13px;color:var(--brown-dark);line-height:1.5;display:none}
+    .up-intro.visible{display:block}
+    .up-intro strong{color:var(--green-dark)}
+    .up-current{position:relative;background:rgba(0,0,0,.05);border:2px dashed #8b6914;border-radius:8px;padding:12px 14px;margin:10px 0;display:flex;justify-content:space-between;align-items:center}
+    .up-current::before{content:'①';position:absolute;top:-10px;left:12px;background:var(--orange);color:#fff;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;box-shadow:2px 2px 0 #8b3a0a;opacity:0;transition:opacity .3s}
+    .up-intro.visible ~ .up-current::before{opacity:1}
+    .up-current-label{font-size:11px;color:var(--brown);font-weight:600;letter-spacing:.3px;text-transform:uppercase}
+    .up-current-value{font-size:20px;font-weight:800;color:var(--brown-dark)}
+    .up-current-new{color:var(--green-dark);font-size:20px;font-weight:800}
+    .up-options-title{position:relative;font-size:12px;font-weight:700;color:var(--brown);letter-spacing:1px;text-transform:uppercase;margin:14px 0 8px}
+    .up-options-title::before{content:'②';position:absolute;top:-6px;right:0;background:var(--orange);color:#fff;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;box-shadow:2px 2px 0 #8b3a0a;opacity:0;transition:opacity .3s}
+    .up-intro.visible ~ .up-options-title::before{opacity:1}
+    .up-options{display:flex;flex-direction:column;gap:10px}
+    .up-option{display:flex;align-items:center;gap:14px;padding:12px 14px;background:rgba(255,255,255,.5);border:2px solid #8b6914;border-radius:8px;cursor:pointer;transition:all .15s;font-family:inherit;color:var(--brown-dark);text-align:left;box-shadow:3px 3px 0 #8b6914}
+    .up-option:hover:not(:disabled){background:rgba(255,255,255,.8);transform:translate(-2px,-2px);box-shadow:5px 5px 0 #8b6914}
+    .up-option:disabled{opacity:.4;cursor:not-allowed}
+    .up-opt-icon{font-size:28px;width:36px;text-align:center;flex-shrink:0}
+    .up-opt-body{flex:1;min-width:0}
+    .up-opt-name{font-size:14px;font-weight:700;color:var(--brown-dark);margin-bottom:2px}
+    .up-opt-desc{font-size:11.5px;color:var(--brown-light);line-height:1.4}
+    .up-opt-stats{display:flex;flex-direction:column;align-items:flex-end;flex-shrink:0;gap:4px}
+    .up-opt-cost{background:var(--green-dark);color:#fff;font-size:11.5px;font-weight:700;padding:3px 7px;border-radius:4px}
+    .up-opt-boost{background:var(--orange);color:#fff;font-size:11px;font-weight:700;padding:3px 7px;border-radius:4px}
+    .up-applied{position:relative;margin-top:16px;padding:12px;background:rgba(39,174,96,.1);border:2px solid var(--green);border-radius:8px}
+    .up-applied::before{content:'③';position:absolute;top:-10px;right:12px;background:var(--orange);color:#fff;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;box-shadow:2px 2px 0 #8b3a0a;opacity:0;transition:opacity .3s}
+    .up-intro.visible ~ .up-applied::before{opacity:1}
+    .up-applied h4{font-size:11px;font-weight:700;color:var(--green-dark);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px}
+    .up-applied-empty{font-size:12px;color:var(--brown-light);font-style:italic}
+    .up-applied-list{display:flex;flex-direction:column;gap:6px}
+    .up-applied-item{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.5);padding:6px 10px;border-radius:4px;font-size:12px}
+    .up-remove{background:var(--red);color:#fff;border:none;padding:3px 8px;font-size:11px;font-weight:700;border-radius:3px;cursor:pointer;font-family:inherit}
+    .up-remove:hover{background:var(--red-dark)}
+
+    /* ══════════ FEEDBACK MODAL ══════════ */
+    .feedback-overlay{position:fixed;inset:0;background:rgba(58,42,16,.85);display:none;align-items:center;justify-content:center;z-index:1000;padding:20px;backdrop-filter:blur(6px)}
+    .feedback-overlay.visible{display:flex;animation:fade-in .3s}
+    @keyframes fade-in{from{opacity:0}to{opacity:1}}
+    .feedback-modal{background:linear-gradient(135deg,var(--cream),var(--cream-dark));border:4px solid var(--brown);border-radius:14px;max-width:720px;width:100%;padding:28px;box-shadow:8px 8px 0 var(--brown-dark),12px 12px 0 rgba(58,42,16,.3);animation:pop-up-fb .4s cubic-bezier(.18,.89,.32,1.28);max-height:90vh;overflow-y:auto}
+    @keyframes pop-up-fb{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+    .fb-celebration{text-align:center;margin-bottom:18px}
+    .fb-icon{font-size:48px;margin-bottom:6px;filter:drop-shadow(3px 3px 0 rgba(90,74,42,.3))}
+    .fb-title{font-size:24px;font-weight:800;color:var(--green-dark);letter-spacing:.3px}
+    .fb-subtitle{font-size:14px;color:var(--brown);margin-top:8px;line-height:1.5}
+    .fb-question-wrap{display:flex;gap:16px;align-items:flex-start;background:rgba(255,255,255,.45);border:2px dashed #8b6914;border-radius:10px;padding:16px;margin-bottom:18px}
+    .fb-hugui-portrait{width:88px;height:88px;flex-shrink:0;background:linear-gradient(180deg,var(--cream-dark),#dcc898);border:3px solid var(--brown);border-radius:8px;display:flex;align-items:center;justify-content:center;padding:6px;box-shadow:3px 3px 0 var(--brown-light)}
+    .fb-hugui-portrait img{width:100%;height:100%;object-fit:contain}
+    .fb-question-content{flex:1;min-width:0}
+    .fb-speaker{font-size:11px;font-weight:800;color:#8b6914;letter-spacing:1.5px;margin-bottom:8px;padding-bottom:6px;border-bottom:2px dashed #c4a86a;text-transform:uppercase}
+    .fb-question{font-size:15px;font-weight:700;color:var(--brown-dark);line-height:1.5}
+    .fb-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px}
+    .fb-opt{background:linear-gradient(180deg,#fff7e0,#f0d8a0);color:var(--brown-dark);border:2px solid #8b6914;padding:14px 10px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;border-radius:6px;transition:all .2s;box-shadow:3px 3px 0 #8b6914}
+    .fb-opt:hover:not(:disabled){background:linear-gradient(180deg,var(--gold),#a87a1e);color:#fff;transform:translate(-2px,-2px);box-shadow:5px 5px 0 #8b6914}
+    .fb-opt.correct{background:linear-gradient(180deg,var(--green),var(--green-dark));color:#fff;border-color:#0f5132;box-shadow:3px 3px 0 #0f5132;animation:correct-pulse .5s}
+    .fb-opt.chosen-wrong{background:linear-gradient(180deg,var(--gold),#a87a1e);color:#fff;border-color:var(--brown);box-shadow:3px 3px 0 var(--brown)}
+    .fb-opt:disabled{cursor:not-allowed}
+    @keyframes correct-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+    .fb-explanation{padding:16px;background:rgba(39,174,96,.1);border-left:4px solid var(--green);border-radius:6px;margin-top:12px;font-size:14px;color:var(--brown-dark);line-height:1.6;display:none}
+    .fb-explanation.visible{display:block;animation:slide-down .3s}
+    @keyframes slide-down{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+    .fb-explanation strong{color:var(--green-dark)}
+    .fb-continue{margin-top:18px;display:none;width:100%;padding:14px;font-size:14px}
+    .fb-continue.visible{display:block;animation:slide-up .3s .2s backwards}
+    @keyframes slide-up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+    /* Responsive */
+    @media (max-width:980px){
+      .reto-main{grid-template-columns:1fr;height:auto;overflow:visible}
+      body{overflow:auto}
+      .metrics-top{grid-template-columns:repeat(2,1fr)}
+      .fb-question-wrap{flex-direction:column;align-items:center;text-align:center}
+      .stepper{flex-wrap:wrap}
+    }
+  </style>
+</head>
+<body>
+
+  <header class="reto-header">
+    <button class="btn-back" onclick="window.location.href='index.html'">◀ Salir</button>
+    <div class="reto-title">
+      <span class="reto-badge">Reto 1 · Proceso</span>
+      <h1>Encuentra y libera el cuello de botella</h1>
+    </div>
+  </header>
+
+  <main class="reto-main">
+
+    <aside class="hugui-side">
+      <div class="hugui-portrait">
+        <img src="static/img/avatars/buhotutor.png" alt="Hugui">
+      </div>
+      <div class="hugui-speaker">🦉 Hugui · Tu tutor</div>
+      <div class="hugui-text" id="hugui-text">¡Hola! Bienvenido al taller de Cervecería UA. Primero <strong>observa la escena 3D</strong> — vas a ver cajas fluyendo por la banda y acumulándose ante una etapa. <strong>Mira dónde está la pila</strong>: esa es la restricción del sistema. Sigue la flecha naranja que apunta a la pila.</div>
+      <div class="hugui-hint">
+        <strong>💡 Tip:</strong> arrastra el mouse sobre la escena para rotar la vista y ver mejor la línea.
+      </div>
+    </aside>
+
+    <section class="game-side">
+
+      <!-- Stepper (diseño instruccional visible) -->
+      <div class="stepper" id="stepper">
+        <div class="step-item active" data-step="1">
+          <div class="step-circle"><span class="step-emoji">👁️</span></div>
+          <div class="step-info"><div class="step-label">Paso 1</div><div class="step-name">Observar</div></div>
+        </div>
+        <div class="step-divider"></div>
+        <div class="step-item" data-step="2">
+          <div class="step-circle"><span class="step-emoji">🎯</span></div>
+          <div class="step-info"><div class="step-label">Paso 2</div><div class="step-name">Identificar</div></div>
+        </div>
+        <div class="step-divider"></div>
+        <div class="step-item" data-step="3">
+          <div class="step-circle"><span class="step-emoji">🔧</span></div>
+          <div class="step-info"><div class="step-label">Paso 3</div><div class="step-name">Intervenir</div></div>
+        </div>
+        <div class="step-divider"></div>
+        <div class="step-item" data-step="4">
+          <div class="step-circle"><span class="step-emoji">✅</span></div>
+          <div class="step-info"><div class="step-label">Paso 4</div><div class="step-name">Verificar</div></div>
+        </div>
+      </div>
+
+      <!-- Métricas en vivo -->
+      <div class="metrics-top">
+        <div class="metric" id="metric-throughput">
+          <div class="metric-label">Salida</div>
+          <div class="metric-value" id="throughput-value">200</div>
+          <div class="metric-sub">L/h actual</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Cuello</div>
+          <div class="metric-value" id="bottleneck-value" style="font-size:13px;color:#E74C3C">Fermentación</div>
+          <div class="metric-sub">etapa más lenta</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Meta</div>
+          <div class="metric-value" style="color:#27AE60">300</div>
+          <div class="metric-sub">L/h mínimo</div>
+        </div>
+        <div class="metric budget" id="metric-budget">
+          <div class="metric-label">💰 Presupuesto</div>
+          <div class="metric-value" id="budget-value">$400</div>
+          <div class="metric-sub">disponible</div>
+        </div>
+      </div>
+
+      <!-- Escena 3D -->
+      <div class="scene-container" id="scene-container">
+        <canvas id="scene-canvas"></canvas>
+        <div class="scene-pointer" id="scene-pointer">
+          <div class="pointer-bubble" id="pointer-text">¡Aquí!</div>
+          <div class="pointer-arrow"></div>
+        </div>
+        <div class="observe-overlay" id="observe-overlay">
+          <div class="observe-icon">👁️</div>
+          <div class="observe-text">¿Dónde se acumulan las cajas?</div>
+        </div>
+      </div>
+
+      <div class="actions-bottom">
+        <button class="btn" id="btn-reset">↺ Reiniciar todo</button>
+        <button class="btn btn-primary" id="btn-verify" disabled>✓ Verificar solución</button>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Panel de mejoras -->
+  <div class="upgrade-overlay" id="upgrade-overlay"></div>
+  <div class="upgrade-panel" id="upgrade-panel">
+    <div class="up-header">
+      <h3 id="up-name">Estación</h3>
+      <button class="up-close" id="up-close" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="up-intro" id="up-intro">
+      <strong>¿Cómo funciona?</strong> ① Mira la capacidad actual y la proyectada. ② Elige una intervención (costo vs impacto). ③ Revisa las mejoras aplicadas — puedes deshacerlas para recuperar presupuesto.
+    </div>
+    <div class="up-current">
+      <div>
+        <div class="up-current-label">Capacidad base</div>
+        <div style="display:flex;align-items:baseline;gap:4px">
+          <span class="up-current-value" id="up-base">200</span>
+          <span style="font-size:11px;color:#8b7340">L/h</span>
+        </div>
+      </div>
+      <div style="font-size:22px;color:var(--orange)">→</div>
+      <div style="text-align:right">
+        <div class="up-current-label">Con mejoras</div>
+        <div style="display:flex;align-items:baseline;gap:4px">
+          <span class="up-current-new" id="up-new">200</span>
+          <span style="font-size:11px;color:#8b7340">L/h</span>
+        </div>
+      </div>
+    </div>
+    <div class="up-options-title">Elige una intervención</div>
+    <div class="up-options" id="up-options"></div>
+    <div class="up-applied">
+      <h4>Mejoras aplicadas en esta estación</h4>
+      <div id="up-applied-list" class="up-applied-empty">Ninguna todavía. Elige una opción arriba.</div>
+    </div>
+  </div>
+
+  <!-- Modal de feedback -->
+  <div class="feedback-overlay" id="feedback-overlay">
+    <div class="feedback-modal">
+      <div class="fb-celebration">
+        <div class="fb-icon">🎉</div>
+        <div class="fb-title">¡Cuello resuelto!</div>
+        <div class="fb-subtitle" id="fb-subtitle">La línea de Cervecería UA ahora fluye sin acumulación crítica.</div>
+      </div>
+      <div class="fb-question-wrap">
+        <div class="fb-hugui-portrait">
+          <img src="static/img/avatars/buhotutor.png" alt="Hugui">
+        </div>
+        <div class="fb-question-content">
+          <div class="fb-speaker">🦉 Hugui pregunta</div>
+          <div class="fb-question">¿Cuál de los 5 pasos de la Teoría de Restricciones (TOC) acabas de aplicar al invertir recursos en la etapa restrictiva?</div>
+        </div>
+      </div>
+      <div class="fb-options" id="fb-options">
+        <button class="fb-opt" data-correct="false" data-explain="<strong>¡Excelente reflexión!</strong> Identificar es el PRIMER paso de TOC — localizar cuál etapa es la restricción. Lo hiciste al inicio observando dónde se acumulaban las cajas. El paso específico que aplicaste al invertir recursos en la etapa va un poco más allá: se llama <strong>Elevar</strong> (aumentar capacidad con recursos). ¡Gran visión global del método!">1. Identificar</button>
+        <button class="fb-opt" data-correct="false" data-explain="<strong>¡Buena intuición!</strong> Explotar es un paso muy poderoso: sacarle el máximo a la restricción sin invertir (mejor coordinación, menos paradas, priorizar lo que pasa por ahí). Aquí usamos recursos nuevos — operarios, turnos o automatización — así que fue un paso más: <strong>Elevar</strong>. Ambos son esenciales en TOC.">2. Explotar</button>
+        <button class="fb-opt" data-correct="false" data-explain="<strong>¡Pensaste en un paso clave!</strong> Subordinar significa que todo el sistema trabaja al ritmo de la restricción (no sobreproducir en etapas rápidas). Es crítico. Lo que hicimos aquí fue algo distinto pero complementario: añadir capacidad a la restricción. Ese paso se llama <strong>Elevar</strong>. ¡Conectaste con el corazón de TOC!">3. Subordinar</button>
+        <button class="fb-opt" data-correct="true" data-explain="<strong>¡Exacto!</strong> Elevar = aumentar la capacidad de la restricción usando más recursos (operarios, turnos, máquinas o automatización). Cuando invertiste presupuesto en Fermentación, estabas ELEVANDO la restricción. Acabas de aplicar el paso 4 de TOC de forma impecable.">4. Elevar</button>
+        <button class="fb-opt" data-correct="false" data-explain="<strong>¡Buen instinto!</strong> Repetir es el paso 5 — volver al inicio cuando ya resolviste la restricción actual, porque siempre aparece una nueva. Es exactamente lo que tendríamos que hacer ahora. Lo que acabas de hacer con el presupuesto fue el paso anterior: <strong>Elevar</strong>. ¡Vas un paso adelante en el ciclo!">5. Repetir</button>
+      </div>
+      <div class="fb-explanation" id="fb-explanation"></div>
+      <button class="btn btn-primary fb-continue" id="fb-continue">Continuar al Reto 2 →</button>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <script>
+  // ════════════════════════════════════════════════════════════
+  // MODELO
+  // ════════════════════════════════════════════════════════════
+  const STATIONS_DATA = [
+    { id:'molienda',     name:'Molienda',     icon:'🌾', x:-6, color:0xf0c040, height:2.2, base:500 },
+    { id:'coccion',      name:'Cocción',      icon:'🔥', x:-2, color:0xC0392B, height:2.6, base:450 },
+    { id:'fermentacion', name:'Fermentación', icon:'🧪', x: 2, color:0x27AE60, height:3.2, base:200 },
+    { id:'envasado',     name:'Envasado',     icon:'📦', x: 6, color:0x8b6914, height:2.0, base:300 }
+  ];
+
+  const UPGRADE_OPTIONS = [
+    { type:'operario',    name:'Operario extra', icon:'👷', cost:100, boost:50,  desc:'Un operario más en la estación' },
+    { type:'turno',       name:'Turno extra',    icon:'🕐', cost:180, boost:80,  desc:'Abrir un turno adicional' },
+    { type:'automatizar', name:'Automatizar',    icon:'⚙️', cost:300, boost:120, desc:'Mejorar máquina y procesos' }
+  ];
+
+  const TOTAL_BUDGET = 400;
+  const GOAL = 300;
+
+  let state = {
+    stations: STATIONS_DATA.map(s => ({ ...s, upgrades:[] })),
+    budgetUsed: 0,
+    step: 1,
+    openedStationIdx: null,
+    introShown: false,
+    won: false
+  };
+
+  const getCap = (st) => st.base + st.upgrades.reduce((s,u)=>s+u.boost, 0);
+  const getThroughput = () => Math.min(...state.stations.map(getCap));
+  const getBottleneckIdx = () => {
+    const caps = state.stations.map(getCap);
+    return caps.indexOf(Math.min(...caps));
+  };
+  const getQueueSize = (i) => {
+    if (i === 0) return 0;
+    let incoming = Infinity;
+    for (let j = 0; j < i; j++) incoming = Math.min(incoming, getCap(state.stations[j]));
+    return Math.max(0, Math.floor((incoming - getCap(state.stations[i])) / 30));
+  };
+
+  // ════════════════════════════════════════════════════════════
+  // THREE.JS
+  // ════════════════════════════════════════════════════════════
+  const container = document.getElementById('scene-container');
+  const canvas = document.getElementById('scene-canvas');
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true });
+  renderer.setPixelRatio(window.devicePixelRatio);
+
+  const scene = new THREE.Scene();
+  scene.background = null;
+
+  const frustumSize = 11;
+  const camera = new THREE.OrthographicCamera();
+  function updateCameraFrustum(){
+    const w = container.clientWidth, h = container.clientHeight;
+    const aspect = w / h;
+    camera.left = -frustumSize*aspect/2;
+    camera.right = frustumSize*aspect/2;
+    camera.top = frustumSize/2;
+    camera.bottom = -frustumSize/2;
+    camera.near = 0.1; camera.far = 100;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
+  }
+  camera.position.set(12, 11, 12);
+  camera.lookAt(0, 1, 0);
+  updateCameraFrustum();
+
+  scene.add(new THREE.AmbientLight(0xffffff, 0.75));
+  const sun = new THREE.DirectionalLight(0xfff0d8, 0.55);
+  sun.position.set(8, 15, 6); scene.add(sun);
+  const fill = new THREE.DirectionalLight(0xaaccff, 0.2);
+  fill.position.set(-8, 10, -4); scene.add(fill);
+
+  const floor = new THREE.Mesh(new THREE.BoxGeometry(22, 0.4, 9), new THREE.MeshLambertMaterial({ color:0xd4c090 }));
+  floor.position.y = -0.2; scene.add(floor);
+  const floorEdge = new THREE.Mesh(new THREE.BoxGeometry(22.4, 0.2, 9.4), new THREE.MeshLambertMaterial({ color:0x8b7340 }));
+  floorEdge.position.y = -0.3; scene.add(floorEdge);
+
+  function roundRect(ctx, x, y, w, h, r){
+    ctx.beginPath();
+    ctx.moveTo(x+r, y);
+    ctx.arcTo(x+w, y, x+w, y+h, r);
+    ctx.arcTo(x+w, y+h, x, y+h, r);
+    ctx.arcTo(x, y+h, x, y, r);
+    ctx.arcTo(x, y, x+w, y, r);
+    ctx.closePath();
+  }
+
+  // Estaciones
+  const stationMeshes = [];
+  state.stations.forEach((st, i) => {
+    const group = new THREE.Group();
+    group.position.set(st.x, 0, 0);
+
+    const platform = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.3, 2.4), new THREE.MeshLambertMaterial({ color:0x8b7340 }));
+    platform.position.y = 0.15; group.add(platform);
+
+    const bodyMat = new THREE.MeshLambertMaterial({ color:st.color });
+    const body = new THREE.Mesh(new THREE.BoxGeometry(1.8, st.height, 1.8), bodyMat);
+    body.position.y = 0.3 + st.height/2;
+    body.userData.idx = i;
+    group.add(body);
+
+    const cap = new THREE.Mesh(new THREE.BoxGeometry(2, 0.35, 2), new THREE.MeshLambertMaterial({ color:0x5a4a2a }));
+    cap.position.y = 0.3 + st.height + 0.175; group.add(cap);
+
+    const detail = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.6, 0.6), new THREE.MeshLambertMaterial({ color:0x3a2a10 }));
+    detail.position.y = 0.3 + st.height + 0.65; group.add(detail);
+
+    // Etiqueta con capacidad (se actualiza en vivo)
+    const labelCanvas = document.createElement('canvas');
+    labelCanvas.width = 320; labelCanvas.height = 96;
+    const labelTex = new THREE.CanvasTexture(labelCanvas);
+    labelTex.minFilter = THREE.LinearFilter;
+    const labelMat = new THREE.SpriteMaterial({ map:labelTex, transparent:true });
+    const label = new THREE.Sprite(labelMat);
+    label.scale.set(2.8, 0.84, 1);
+    label.position.y = 0.3 + st.height + 1.6;
+    group.add(label);
+
+    scene.add(group);
+    stationMeshes.push({ group, body, bodyMat, data:st, labelCanvas, labelTex });
+  });
+
+  function drawStationLabel(i){
+    const m = stationMeshes[i];
+    const c = m.labelCanvas.getContext('2d');
+    c.clearRect(0, 0, 320, 96);
+    // Fondo
+    c.fillStyle = 'rgba(58,42,16,0.92)';
+    roundRect(c, 0, 0, 320, 96, 12); c.fill();
+    // Nombre
+    c.fillStyle = '#f5e6c8';
+    c.font = 'bold 20px "Google Sans", sans-serif';
+    c.textAlign = 'center'; c.textBaseline = 'middle';
+    c.fillText(m.data.name.toUpperCase(), 160, 28);
+    // Capacidad actual
+    const cap = getCap(state.stations[i]);
+    const isBottleneck = i === getBottleneckIdx() && getThroughput() < GOAL && !state.won;
+    c.font = 'bold 32px "Google Sans", sans-serif';
+    c.fillStyle = cap >= GOAL ? '#5feaa0' : (isBottleneck ? '#ff6b6b' : '#ffcc77');
+    c.fillText(cap + ' L/h', 160, 64);
+    m.labelTex.needsUpdate = true;
+  }
+  function drawAllLabels(){ state.stations.forEach((_, i) => drawStationLabel(i)); }
+  drawAllLabels();
+
+  // Bandas
+  const belts = [];
+  for (let i = 0; i < state.stations.length - 1; i++){
+    const a = state.stations[i].x, b = state.stations[i+1].x;
+    const len = b - a - 2;
+    if (len <= 0) continue;
+    const belt = new THREE.Mesh(new THREE.BoxGeometry(len, 0.2, 0.9), new THREE.MeshLambertMaterial({ color:0x3a2a10 }));
+    belt.position.set((a+b)/2, 0.1, 0); scene.add(belt);
+    for (let k = -1; k < 2; k++){
+      const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.22, 0.7), new THREE.MeshLambertMaterial({ color:0x8b7340 }));
+      stripe.position.set((a+b)/2 + k*0.8, 0.11, 0);
+      stripe.userData.beltMin = a + 1; stripe.userData.beltMax = b - 1;
+      scene.add(stripe); belts.push(stripe);
+    }
+  }
+
+  // Cajas flotantes
+  const flowingBoxes = [];
+  function spawnBox(){
+    const box = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.35, 0.35), new THREE.MeshLambertMaterial({ color:0xE67E22 }));
+    box.position.set(-9, 0.4, 0); scene.add(box); flowingBoxes.push(box);
+  }
+  for (let i = 0; i < 3; i++) spawnBox();
+  setInterval(() => { if (flowingBoxes.length < 12) spawnBox(); }, 1400);
+
+  // Pilas
+  const queueBoxGroups = [];
+  for (let i = 1; i < state.stations.length; i++){
+    const g = new THREE.Group();
+    g.position.set(state.stations[i].x - 1.5, 0, 0.6);
+    scene.add(g); queueBoxGroups.push(g);
+  }
+  function rebuildQueues(){
+    queueBoxGroups.forEach((g, gi) => {
+      while (g.children.length) {
+        const child = g.children[0]; g.remove(child);
+        if (child.geometry) child.geometry.dispose();
+        if (child.material) child.material.dispose();
+      }
+      const qsize = Math.min(getQueueSize(gi + 1), 9);
+      for (let k = 0; k < qsize; k++){
+        const row = Math.floor(k / 3), col = k % 3;
+        const b = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.38, 0.38), new THREE.MeshLambertMaterial({ color:0xE67E22 }));
+        b.position.set(col * 0.42, 0.2 + row * 0.42, 0); g.add(b);
+      }
+    });
+  }
+  rebuildQueues();
+
+  function updateBottleneckGlow(){
+    stationMeshes.forEach((m, i) => {
+      if (i === getBottleneckIdx() && getThroughput() < GOAL && !state.won){
+        m.bodyMat.emissive = new THREE.Color(0xE74C3C);
+        m.bodyMat.emissiveIntensity = 0.28;
+      } else {
+        m.bodyMat.emissiveIntensity = 0;
+      }
+    });
+  }
+  updateBottleneckGlow();
+
+  // Raycaster
+  const raycaster = new THREE.Raycaster();
+  const mouse = new THREE.Vector2();
+  canvas.addEventListener('click', (e) => {
+    if (state.won) return;
+    const rect = canvas.getBoundingClientRect();
+    mouse.x = ((e.clientX-rect.left)/rect.width)*2 - 1;
+    mouse.y = -((e.clientY-rect.top)/rect.height)*2 + 1;
+    raycaster.setFromCamera(mouse, camera);
+    const hits = raycaster.intersectObjects(stationMeshes.map(m => m.body));
+    if (hits.length > 0) onStationClick(hits[0].object.userData.idx);
+  });
+  canvas.addEventListener('pointermove', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    mouse.x = ((e.clientX-rect.left)/rect.width)*2 - 1;
+    mouse.y = -((e.clientY-rect.top)/rect.height)*2 + 1;
+    raycaster.setFromCamera(mouse, camera);
+    const hits = raycaster.intersectObjects(stationMeshes.map(m => m.body));
+    canvas.style.cursor = hits.length > 0 ? 'pointer' : 'grab';
+  });
+
+  // Drag para rotación leve
+  let isDragging = false, dragStart = { x:0, angle:0 };
+  let cameraAngle = Math.PI / 4;
+  canvas.addEventListener('pointerdown', (e) => { isDragging = true; dragStart.x = e.clientX; dragStart.angle = cameraAngle; });
+  window.addEventListener('pointerup', () => { isDragging = false; });
+  window.addEventListener('pointermove', (e) => {
+    if (!isDragging) return;
+    const dx = e.clientX - dragStart.x;
+    cameraAngle = dragStart.angle + dx * 0.005;
+    cameraAngle = Math.max(Math.PI*0.15, Math.min(Math.PI*0.5, cameraAngle));
+    const r = Math.sqrt(144 + 144);
+    camera.position.x = r * Math.sin(cameraAngle) * Math.cos(Math.PI/6);
+    camera.position.z = r * Math.cos(cameraAngle) * Math.cos(Math.PI/6);
+    camera.lookAt(0, 1, 0);
+  });
+
+  // Helper: proyectar 3D → 2D (para la flecha contextual)
+  const tempVec = new THREE.Vector3();
+  function worldToScreen(x, y, z){
+    tempVec.set(x, y, z).project(camera);
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: (tempVec.x * 0.5 + 0.5) * rect.width,
+      y: (-tempVec.y * 0.5 + 0.5) * rect.height,
+      onScreen: tempVec.z < 1
+    };
+  }
+
+  // Objetivo actual del puntero visual
+  let pointerTarget = null;
+  function setPointer(x, y, z, text){
+    pointerTarget = { x, y, z, text };
+    const p = document.getElementById('scene-pointer');
+    document.getElementById('pointer-text').textContent = text;
+    p.classList.add('visible');
+  }
+  function hidePointer(){
+    pointerTarget = null;
+    document.getElementById('scene-pointer').classList.remove('visible');
+  }
+  function updatePointerPosition(){
+    if (!pointerTarget) return;
+    const s = worldToScreen(pointerTarget.x, pointerTarget.y, pointerTarget.z);
+    const p = document.getElementById('scene-pointer');
+    p.style.left = s.x + 'px';
+    p.style.top = (s.y - 20) + 'px';
+  }
+
+  // Animación
+  function animate(){
+    requestAnimationFrame(animate);
+    belts.forEach(s => {
+      s.position.x += 0.04;
+      if (s.position.x > s.userData.beltMax) s.position.x = s.userData.beltMin;
+    });
+    flowingBoxes.forEach((box, idx) => {
+      const stationIdx = state.stations.findIndex(s => box.position.x >= s.x - 1 && box.position.x <= s.x + 1);
+      let speed = 0.025;
+      if (stationIdx >= 0) speed = 0.008 + (getCap(state.stations[stationIdx]) / 500) * 0.025;
+      box.position.x += speed;
+      if (box.position.x > 9){ scene.remove(box); flowingBoxes.splice(idx, 1); }
+    });
+    // Bobbing del cuello
+    const bnIdx = getBottleneckIdx();
+    if (!state.won && getThroughput() < GOAL){
+      const t = performance.now() * 0.003;
+      stationMeshes[bnIdx].group.position.y = Math.sin(t) * 0.04;
+    } else {
+      stationMeshes.forEach(m => { m.group.position.y = 0; });
+    }
+    updatePointerPosition();
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  window.addEventListener('resize', updateCameraFrustum);
+
+  // ════════════════════════════════════════════════════════════
+  // UI / STEPPER / POINTER
+  // ════════════════════════════════════════════════════════════
+  const $ = (id) => document.getElementById(id);
+
+  function setHugui(text){ $('hugui-text').innerHTML = text; }
+
+  function setStep(n){
+    state.step = n;
+    document.querySelectorAll('.step-item').forEach(el => {
+      const s = parseInt(el.dataset.step);
+      el.classList.toggle('active', s === n);
+      el.classList.toggle('done', s < n);
+    });
+    document.querySelectorAll('.step-divider').forEach((el, idx) => {
+      el.classList.toggle('done', idx < n - 1);
+    });
+    updatePointerForStep();
+  }
+
+  function updatePointerForStep(){
+    const bnIdx = getBottleneckIdx();
+    const st = state.stations[bnIdx];
+    if (state.won){ hidePointer(); return; }
+    if (state.step === 1){
+      // Apuntar a la pila antes del cuello
+      setPointer(st.x - 1, 1.6, 0.6, '¡Mira la pila!');
+    } else if (state.step === 2){
+      // Apuntar a la estación cuello (arriba)
+      setPointer(st.x, st.height + 1.2, 0, 'Click aquí');
+    } else if (state.step === 3){
+      // Si el cuello sigue, sigue apuntándolo
+      if (getThroughput() < GOAL){
+        setPointer(st.x, st.height + 1.2, 0, 'Invierte aquí');
+      } else {
+        hidePointer();
+      }
+    } else {
+      hidePointer();
+    }
+  }
+
+  function renderMetrics(){
+    const t = getThroughput();
+    const bnIdx = getBottleneckIdx();
+    $('throughput-value').textContent = t;
+    $('bottleneck-value').textContent = state.stations[bnIdx].name;
+    const mt = $('metric-throughput');
+    mt.classList.remove('warning','success');
+    if (t >= GOAL) mt.classList.add('success');
+    else if (state.stations.some(s => s.upgrades.length > 0)) mt.classList.add('warning');
+
+    const left = TOTAL_BUDGET - state.budgetUsed;
+    $('budget-value').textContent = '$' + left;
+    $('metric-budget').classList.toggle('low', left < 100);
+
+    const hasUpgrades = state.stations.some(s => s.upgrades.length > 0);
+    const btn = $('btn-verify');
+    btn.disabled = !hasUpgrades;
+    btn.classList.toggle('ready', t >= GOAL && hasUpgrades);
+
+    drawAllLabels();
+  }
+
+  // Floating text (+50, -$100, etc.)
+  function spawnFloater(worldX, worldY, worldZ, text, color){
+    const s = worldToScreen(worldX, worldY, worldZ);
+    const f = document.createElement('div');
+    f.className = 'floater';
+    f.textContent = text;
+    f.style.color = color;
+    f.style.left = s.x + 'px';
+    f.style.top = s.y + 'px';
+    container.appendChild(f);
+    setTimeout(() => f.remove(), 1500);
+  }
+
+  // ── Click en estación ──
+  function onStationClick(idx){
+    if (state.step === 1){
+      const bnIdx = getBottleneckIdx();
+      if (idx === bnIdx){
+        setHugui(`¡<strong>Exacto!</strong> ${state.stations[idx].name} es el cuello — procesa solo ${state.stations[idx].base} L/h mientras las etapas previas producen hasta 500. Ahora tienes <strong>$400 de presupuesto</strong>. Vuelve a dar click en esta estación para ver opciones de inversión.`);
+        setStep(2);
+        // Ocultar overlay observe si sigue
+        $('observe-overlay').style.display = 'none';
+        return;
+      } else {
+        setHugui(`<strong>${state.stations[idx].name}</strong> no es el cuello. Observa: la flecha naranja te apunta dónde se acumulan las cajas. Haz click en esa estación.`);
+        return;
+      }
+    }
+    openStationPanel(idx);
+  }
+
+  function openStationPanel(idx){
+    state.openedStationIdx = idx;
+    const st = state.stations[idx];
+    $('up-name').textContent = st.icon + ' ' + st.name;
+    $('up-base').textContent = st.base;
+    $('up-new').textContent = getCap(st);
+    renderUpgradeOptions(idx);
+    renderAppliedList(idx);
+    $('upgrade-panel').classList.add('visible');
+    $('upgrade-overlay').classList.add('visible');
+    // Primera vez que se abre, mostrar intro
+    if (!state.introShown){
+      $('up-intro').classList.add('visible');
+      state.introShown = true;
+    }
+    if (state.step === 2){
+      setHugui(`Panel de <strong>${st.name}</strong>. Prueba las 3 opciones — cada una tiene costo y capacidad distintos. <strong>Combina</strong> o elige la más eficiente. Mira cómo cambia la salida del sistema en tiempo real.`);
+      setStep(3);
+    }
+  }
+
+  function closeStationPanel(){
+    $('upgrade-panel').classList.remove('visible');
+    $('upgrade-overlay').classList.remove('visible');
+    state.openedStationIdx = null;
+  }
+
+  function renderUpgradeOptions(idx){
+    const list = $('up-options'); list.innerHTML = '';
+    const left = TOTAL_BUDGET - state.budgetUsed;
+    UPGRADE_OPTIONS.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'up-option';
+      btn.disabled = opt.cost > left;
+      btn.innerHTML = `
+        <div class="up-opt-icon">${opt.icon}</div>
+        <div class="up-opt-body">
+          <div class="up-opt-name">${opt.name}</div>
+          <div class="up-opt-desc">${opt.desc}</div>
+        </div>
+        <div class="up-opt-stats">
+          <span class="up-opt-cost">$${opt.cost}</span>
+          <span class="up-opt-boost">+${opt.boost} L/h</span>
+        </div>
+      `;
+      btn.addEventListener('click', () => applyUpgrade(idx, opt));
+      list.appendChild(btn);
+    });
+  }
+
+  function renderAppliedList(idx){
+    const st = state.stations[idx], box = $('up-applied-list');
+    if (st.upgrades.length === 0){
+      box.className = 'up-applied-empty';
+      box.textContent = 'Ninguna todavía. Elige una opción arriba.';
+      return;
+    }
+    box.className = 'up-applied-list';
+    box.innerHTML = '';
+    st.upgrades.forEach((u, uidx) => {
+      const item = document.createElement('div');
+      item.className = 'up-applied-item';
+      item.innerHTML = `<span>${u.icon} ${u.name} <strong style="color:#27AE60">+${u.boost} L/h</strong></span><button class="up-remove" data-uidx="${uidx}">↺ Deshacer ($${u.cost})</button>`;
+      item.querySelector('.up-remove').addEventListener('click', () => removeUpgrade(idx, uidx));
+      box.appendChild(item);
+    });
+  }
+
+  function applyUpgrade(stationIdx, opt){
+    const left = TOTAL_BUDGET - state.budgetUsed;
+    if (opt.cost > left) return;
+    state.stations[stationIdx].upgrades.push({ ...opt });
+    state.budgetUsed += opt.cost;
+    // Floaters visuales
+    const st = state.stations[stationIdx];
+    spawnFloater(st.x, st.height + 0.8, 0, `+${opt.boost} L/h`, '#27AE60');
+    setTimeout(() => {
+      // Flotador de costo sobre presupuesto (simulamos posición en la esquina sup der)
+      const rect = container.getBoundingClientRect();
+      const f = document.createElement('div');
+      f.className = 'floater';
+      f.textContent = `-$${opt.cost}`;
+      f.style.color = '#E74C3C';
+      f.style.left = (rect.width - 60) + 'px';
+      f.style.top = '20px';
+      container.appendChild(f);
+      setTimeout(() => f.remove(), 1500);
+    }, 200);
+    afterChange(stationIdx);
+    const t = getThroughput();
+    if (t >= GOAL && state.step === 3){
+      setHugui(`¡<strong>Meta alcanzada!</strong> Salida: ${t} L/h con $${state.budgetUsed} gastados. El botón <strong>Verificar solución</strong> ya brilla — haz click cuando estés listo.`);
+      setStep(4);
+    }
+  }
+
+  function removeUpgrade(stationIdx, uidx){
+    const u = state.stations[stationIdx].upgrades[uidx];
+    state.budgetUsed -= u.cost;
+    state.stations[stationIdx].upgrades.splice(uidx, 1);
+    const st = state.stations[stationIdx];
+    spawnFloater(st.x, st.height + 0.8, 0, `+$${u.cost}`, '#27AE60');
+    afterChange(stationIdx);
+  }
+
+  function afterChange(stationIdx){
+    const st = state.stations[stationIdx];
+    $('up-new').textContent = getCap(st);
+    renderUpgradeOptions(stationIdx);
+    renderAppliedList(stationIdx);
+    renderMetrics();
+    updateBottleneckGlow();
+    rebuildQueues();
+    updatePointerForStep();
+  }
+
+  $('up-close').addEventListener('click', closeStationPanel);
+  $('upgrade-overlay').addEventListener('click', closeStationPanel);
+
+  // Verificar
+  $('btn-verify').addEventListener('click', () => {
+    const t = getThroughput();
+    if (t >= GOAL){
+      state.won = true;
+      setStep(5);
+      hidePointer();
+      updateBottleneckGlow();
+      const unused = TOTAL_BUDGET - state.budgetUsed;
+      const subtitle = unused > 100
+        ? `Salida final: ${t} L/h · Gastaste solo $${state.budgetUsed} de $${TOTAL_BUDGET} — eficiencia impecable.`
+        : `Salida final: ${t} L/h con $${state.budgetUsed} invertidos. Estrategia sólida.`;
+      $('fb-subtitle').textContent = subtitle;
+      setTimeout(() => { $('feedback-overlay').classList.add('visible'); }, 400);
+    } else {
+      setHugui(`Aún no llegamos a la meta. Salida: <strong>${t} L/h</strong>, faltan ${GOAL - t}. Invierte más en la etapa más lenta (la flecha te indica cuál).`);
+    }
+  });
+
+  // Reset
+  $('btn-reset').addEventListener('click', () => {
+    state = {
+      stations: STATIONS_DATA.map(s => ({ ...s, upgrades:[] })),
+      budgetUsed: 0,
+      step: 1,
+      openedStationIdx: null,
+      introShown: false,
+      won: false
+    };
+    setHugui('Empezamos de cero. Observa la línea — la flecha te indica dónde está la acumulación. Click en esa estación.');
+    setStep(1);
+    $('observe-overlay').style.display = '';
+    $('observe-overlay').classList.remove('visible');
+    setTimeout(() => $('observe-overlay').classList.add('visible'), 50);
+    renderMetrics();
+    updateBottleneckGlow();
+    rebuildQueues();
+    closeStationPanel();
+    $('up-intro').classList.remove('visible');
+  });
+
+  // Feedback modal
+  $('fb-options').addEventListener('click', (e) => {
+    const btn = e.target.closest('.fb-opt'); if (!btn || btn.disabled) return;
+    const correct = btn.dataset.correct === 'true', explain = btn.dataset.explain;
+    document.querySelectorAll('.fb-opt').forEach(b => {
+      b.disabled = true;
+      if (b.dataset.correct === 'true') b.classList.add('correct');
+    });
+    if (!correct) btn.classList.add('chosen-wrong');
+    const exp = $('fb-explanation');
+    exp.innerHTML = explain;
+    exp.classList.add('visible');
+    $('fb-continue').classList.add('visible');
+  });
+  $('fb-continue').addEventListener('click', () => {
+    window.location.href = 'reto_interactivo_2.html';
+  });
+
+  // Init
+  renderMetrics();
+  setStep(1);
+  setTimeout(() => $('observe-overlay').classList.add('visible'), 400);
+  </script>
+
+</body>
+</html>

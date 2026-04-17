@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reto Interactivo 2 · Calidad · Cervecería UA</title>
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --cream:#f5e6c8;
+      --cream-dark:#e8d5aa;
+      --brown:#5a4a2a;
+      --brown-dark:#3a2a10;
+      --brown-light:#8b7340;
+      --gold:#d4a843;
+      --green:#27AE60;
+      --green-dark:#1E8449;
+      --green-darker:#0f5132;
+      --red:#E74C3C;
+      --red-dark:#922B21;
+      --blue:#2980B9;
+    }
+    body{font-family:'Google Sans','DM Sans',sans-serif;background:linear-gradient(180deg,#f5e6c8,#e8d5aa);min-height:100vh;color:var(--brown-dark);overflow:hidden;font-weight:500}
+
+    /* HEADER */
+    .reto-header{display:flex;align-items:center;gap:20px;padding:14px 28px;background:linear-gradient(180deg,var(--cream),#efe0c0);border-bottom:3px solid var(--brown);box-shadow:0 3px 0 #c4a86a;height:72px;flex-shrink:0}
+    .btn-back{background:var(--brown);color:var(--cream);border:2px solid var(--brown-dark);padding:8px 14px;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;border-radius:6px;letter-spacing:.5px;transition:all .15s;box-shadow:3px 3px 0 var(--brown-dark)}
+    .btn-back:hover{background:var(--brown-light);transform:translate(-2px,-2px);box-shadow:5px 5px 0 var(--brown-dark)}
+    .reto-title{flex:1}
+    .reto-badge{display:inline-block;background:var(--green);color:#fff;font-size:10px;font-weight:700;letter-spacing:2px;padding:3px 9px;border-radius:3px;text-transform:uppercase;margin-bottom:4px;box-shadow:2px 2px 0 var(--green-darker)}
+    .reto-title h1{font-size:18px;font-weight:700;color:var(--brown-dark);letter-spacing:.3px;line-height:1.2}
+
+    /* MAIN */
+    .reto-main{display:grid;grid-template-columns:340px 1fr;gap:18px;padding:18px;height:calc(100vh - 72px);overflow:hidden}
+
+    /* HUGUI */
+    .hugui-side{background:linear-gradient(135deg,var(--cream),#efe0c0,var(--cream-dark));border:3px solid var(--brown);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;box-shadow:5px 5px 0 var(--brown),8px 8px 0 rgba(90,74,42,.3)}
+    .hugui-portrait{width:100%;aspect-ratio:1;max-width:180px;margin:0 auto;background:linear-gradient(180deg,var(--cream-dark),#dcc898);border:3px solid var(--brown);border-radius:10px;display:flex;align-items:center;justify-content:center;padding:8px;box-shadow:inset 0 2px 8px rgba(0,0,0,.12),3px 3px 0 var(--brown-light)}
+    .hugui-portrait img{width:100%;height:100%;object-fit:contain}
+    .hugui-speaker{font-size:11px;font-weight:800;color:var(--brown);letter-spacing:2px;padding-bottom:6px;border-bottom:2px dashed #c4a86a;text-transform:uppercase;margin-top:4px}
+    .hugui-text{font-size:14px;color:var(--brown-dark);line-height:1.55;min-height:120px;font-weight:500}
+    .hugui-text strong{color:var(--green-dark);font-weight:700}
+    .hugui-hint{background:rgba(39,174,96,.12);border-left:4px solid var(--green);padding:10px 12px;border-radius:4px;font-size:12px;color:var(--brown);line-height:1.5;margin-top:auto}
+
+    /* GAME SIDE */
+    .game-side{display:flex;flex-direction:column;gap:12px;overflow:hidden;min-width:0}
+
+    /* Recap banner (hilo conductor) */
+    .recap-banner{background:linear-gradient(135deg,rgba(230,126,34,.15),rgba(230,126,34,.05));border:2px solid #E67E22;border-radius:8px;padding:10px 14px;display:flex;align-items:center;gap:10px;font-size:12px;color:var(--brown-dark);flex-shrink:0;box-shadow:2px 2px 0 #8b3a0a}
+    .recap-icon{font-size:18px;flex-shrink:0}
+    .recap-banner strong{color:#CA6F1E;font-weight:700}
+
+    /* Stepper */
+    .stepper{display:flex;align-items:center;background:rgba(255,255,255,.6);border:2px solid #8b6914;border-radius:10px;padding:10px 14px;box-shadow:3px 3px 0 #8b6914;gap:4px;flex-shrink:0}
+    .step-item{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+    .step-circle{width:36px;height:36px;border-radius:50%;background:#d4c090;border:3px solid #8b6914;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;transition:all .3s;position:relative}
+    .step-item.active .step-circle{background:var(--green);border-color:var(--green-dark);color:#fff;animation:pulse-step 1.5s infinite}
+    .step-item.done .step-circle{background:var(--green);border-color:var(--green-dark);color:#fff}
+    .step-item.done .step-circle::after{content:'✓';position:absolute;font-size:18px;font-weight:900;color:#fff}
+    .step-item.done .step-emoji{display:none}
+    @keyframes pulse-step{0%,100%{box-shadow:0 0 0 0 rgba(39,174,96,.55)}70%{box-shadow:0 0 0 10px rgba(39,174,96,0)}}
+    .step-info{min-width:0}
+    .step-label{font-size:9px;font-weight:700;letter-spacing:1.5px;color:var(--brown-light);text-transform:uppercase}
+    .step-item.active .step-label,.step-item.done .step-label{color:var(--green-dark)}
+    .step-name{font-size:13px;font-weight:700;color:var(--brown-dark);line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .step-divider{flex:0 0 auto;width:24px;height:3px;background:#c4a86a;border-radius:2px;margin:0 4px}
+    .step-divider.done{background:var(--green)}
+
+    /* Metrics */
+    .metrics-top{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;flex-shrink:0}
+    .metric{background:rgba(255,255,255,.55);border:2px solid #8b6914;border-radius:8px;padding:10px 12px;text-align:center;transition:all .3s;box-shadow:3px 3px 0 #8b6914}
+    .metric.warning{border-color:var(--red);box-shadow:3px 3px 0 var(--red-dark)}
+    .metric.success{border-color:var(--green);box-shadow:3px 3px 0 var(--green-dark)}
+    .metric-label{font-size:9px;font-weight:700;letter-spacing:1.4px;color:#8b6914;text-transform:uppercase;margin-bottom:3px}
+    .metric-value{font-size:20px;font-weight:800;color:var(--brown-dark);letter-spacing:.3px;font-variant-numeric:tabular-nums}
+    .metric-sub{font-size:10px;color:var(--brown-light);margin-top:2px;font-weight:500}
+    .metric.warning .metric-value{color:var(--red)}
+    .metric.success .metric-value{color:var(--green)}
+
+    /* Scene */
+    .scene-container{flex:1;background:linear-gradient(180deg,#fff7e0,var(--cream));border:3px solid var(--brown);border-radius:12px;position:relative;overflow:hidden;box-shadow:5px 5px 0 var(--brown),8px 8px 0 rgba(90,74,42,.3);min-height:0}
+    #scene-canvas{width:100%;height:100%;display:block;cursor:grab}
+
+    /* Pointer */
+    .scene-pointer{position:absolute;z-index:30;pointer-events:none;transform:translate(-50%,-100%);display:none;animation:bob 1s ease-in-out infinite}
+    .scene-pointer.visible{display:block}
+    @keyframes bob{0%,100%{transform:translate(-50%,-100%)}50%{transform:translate(-50%,calc(-100% - 10px))}}
+    .pointer-bubble{background:var(--green);color:#fff;padding:6px 12px;border-radius:16px;font-size:12px;font-weight:700;box-shadow:2px 2px 0 var(--green-darker);white-space:nowrap;letter-spacing:.3px}
+    .pointer-arrow{width:0;height:0;margin:0 auto;border-left:10px solid transparent;border-right:10px solid transparent;border-top:14px solid var(--green);filter:drop-shadow(0 3px 0 var(--green-darker))}
+
+    .floater{position:absolute;font-size:16px;font-weight:800;pointer-events:none;z-index:25;text-shadow:2px 2px 0 rgba(0,0,0,.35);animation:float-up 1.4s ease-out forwards;transform:translate(-50%,0)}
+    @keyframes float-up{0%{opacity:0;transform:translate(-50%,0) scale(.7)}15%{opacity:1;transform:translate(-50%,-14px) scale(1.15)}40%{opacity:1;transform:translate(-50%,-34px) scale(1)}100%{opacity:0;transform:translate(-50%,-80px) scale(.95)}}
+
+    .observe-overlay{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:40;text-align:center;pointer-events:none;animation:observe-pop 4s ease-out forwards;display:none}
+    .observe-overlay.visible{display:block}
+    @keyframes observe-pop{0%{opacity:0;transform:translate(-50%,-50%) scale(.7)}15%,75%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.2)}}
+    .observe-icon{font-size:64px;filter:drop-shadow(4px 4px 0 rgba(0,0,0,.3));margin-bottom:6px}
+    .observe-text{background:rgba(58,42,16,.9);color:var(--cream);padding:10px 22px;border-radius:24px;font-size:15px;font-weight:700;box-shadow:4px 4px 0 rgba(0,0,0,.3);letter-spacing:.5px}
+
+    /* Mini-clipboard flotante (progreso de inspección) */
+    .clipboard{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.92);border:3px solid var(--brown);border-radius:8px;padding:12px;box-shadow:4px 4px 0 var(--brown);z-index:20;min-width:180px}
+    .clipboard h4{font-size:11px;letter-spacing:1.5px;color:var(--brown);text-transform:uppercase;font-weight:700;margin-bottom:8px;padding-bottom:6px;border-bottom:2px dashed #c4a86a;display:flex;align-items:center;gap:6px}
+    .clipboard-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+    .clip-slot{aspect-ratio:1;background:rgba(0,0,0,.05);border:2px dashed #c4a86a;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:var(--brown-light);transition:all .2s;cursor:default}
+    .clip-slot.inspected{background:rgba(39,174,96,.15);border:2px solid var(--green);border-style:solid;color:var(--green-dark)}
+    .clip-slot.inspected.has-defect{background:rgba(231,76,60,.15);border-color:var(--red);color:var(--red-dark)}
+    .clip-slot.active{border-color:var(--green);background:rgba(39,174,96,.3);animation:pulse-slot 1s infinite}
+    @keyframes pulse-slot{0%,100%{box-shadow:0 0 0 0 rgba(39,174,96,.4)}50%{box-shadow:0 0 0 6px rgba(39,174,96,0)}}
+
+    /* Actions */
+    .actions-bottom{display:flex;gap:12px;justify-content:space-between;align-items:center;flex-shrink:0}
+    .btn{background:var(--brown);color:var(--cream);border:2px solid var(--brown-dark);padding:11px 22px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;border-radius:6px;letter-spacing:.8px;transition:all .15s;box-shadow:4px 4px 0 var(--brown-dark);position:relative}
+    .btn:hover:not(:disabled){background:var(--brown-light);transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--brown-dark)}
+    .btn:active{transform:translate(0,0);box-shadow:2px 2px 0 var(--brown-dark)}
+    .btn-primary{background:linear-gradient(135deg,var(--green),var(--green-dark));border-color:var(--green-darker);color:#fff;box-shadow:4px 4px 0 var(--green-darker)}
+    .btn-primary:hover:not(:disabled){background:linear-gradient(135deg,var(--green-dark),var(--green-darker));box-shadow:6px 6px 0 var(--green-darker)}
+    .btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:4px 4px 0 var(--brown-dark)}
+    .btn-primary.ready{animation:ready-pulse 1s ease-in-out infinite}
+    @keyframes ready-pulse{0%,100%{transform:translate(0,0);box-shadow:4px 4px 0 var(--green-darker),0 0 0 0 rgba(39,174,96,.6)}50%{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--green-darker),0 0 0 12px rgba(39,174,96,0)}}
+    .btn-primary.ready::after{content:'👈 ¡Listo!';position:absolute;left:calc(100% + 12px);top:50%;transform:translateY(-50%);background:var(--green);color:#fff;padding:6px 12px;border-radius:6px;font-size:12px;white-space:nowrap;box-shadow:2px 2px 0 var(--green-darker);animation:wiggle-tip 1.2s ease-in-out infinite}
+    @keyframes wiggle-tip{0%,100%{transform:translateY(-50%) translateX(0)}50%{transform:translateY(-50%) translateX(-6px)}}
+
+    /* Generic modal/overlay */
+    .modal-overlay{position:fixed;inset:0;background:rgba(58,42,16,.5);display:none;z-index:500;backdrop-filter:blur(2px)}
+    .modal-overlay.visible{display:block}
+    .modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:92%;max-width:600px;background:linear-gradient(135deg,var(--cream),#efe0c0);border:4px solid var(--brown);border-radius:14px;padding:24px;display:none;z-index:501;box-shadow:8px 8px 0 var(--brown-dark),12px 12px 0 rgba(58,42,16,.3);max-height:90vh;overflow-y:auto}
+    .modal.visible{display:block;animation:pop-up .3s cubic-bezier(.18,.89,.32,1.28)}
+    @keyframes pop-up{from{transform:translate(-50%,-50%) scale(.8);opacity:0}to{transform:translate(-50%,-50%) scale(1);opacity:1}}
+    .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+    .modal-header h3{font-size:20px;font-weight:800;color:var(--brown-dark)}
+    .modal-close{background:var(--red-dark);color:#fff;border:2px solid #5a1814;width:32px;height:32px;border-radius:50%;font-size:14px;font-weight:700;cursor:pointer;box-shadow:2px 2px 0 #5a1814;transition:all .15s}
+    .modal-close:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 #5a1814}
+
+    /* Inspection panel content */
+    .insp-bottle-preview{background:rgba(0,0,0,.04);border:2px dashed #8b6914;border-radius:8px;padding:14px;display:flex;align-items:center;gap:14px;margin:10px 0 14px}
+    .insp-bottle-art{width:80px;height:140px;position:relative;flex-shrink:0}
+    .insp-bottle-art svg{width:100%;height:100%}
+    .insp-bottle-info{flex:1}
+    .insp-bottle-info h4{font-size:15px;font-weight:800;color:var(--brown-dark);margin-bottom:4px}
+    .insp-bottle-info p{font-size:12px;color:var(--brown-light);line-height:1.5}
+    .insp-criteria-title{font-size:12px;font-weight:700;color:var(--brown);letter-spacing:1px;text-transform:uppercase;margin:12px 0 8px}
+    .insp-criteria{display:flex;flex-direction:column;gap:10px}
+    .insp-row{background:rgba(255,255,255,.5);border:2px solid #8b6914;border-radius:8px;padding:12px 14px;display:flex;align-items:center;gap:12px;box-shadow:3px 3px 0 #8b6914}
+    .insp-row-icon{font-size:22px;flex-shrink:0}
+    .insp-row-body{flex:1;min-width:0}
+    .insp-row-name{font-size:13px;font-weight:700;color:var(--brown-dark);margin-bottom:2px}
+    .insp-row-desc{font-size:11px;color:var(--brown-light);line-height:1.4}
+    .insp-buttons{display:flex;gap:6px;flex-shrink:0}
+    .insp-btn{padding:8px 12px;border:2px solid var(--brown);border-radius:6px;font-family:inherit;font-size:11px;font-weight:800;cursor:pointer;letter-spacing:.5px;transition:all .15s;box-shadow:2px 2px 0 var(--brown);background:#fff;color:var(--brown-dark);text-transform:uppercase}
+    .insp-btn:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--brown)}
+    .insp-btn.selected-pass{background:var(--green);color:#fff;border-color:var(--green-darker);box-shadow:2px 2px 0 var(--green-darker)}
+    .insp-btn.selected-fail{background:var(--red);color:#fff;border-color:var(--red-dark);box-shadow:2px 2px 0 var(--red-dark)}
+    .insp-confirm{margin-top:16px;width:100%;padding:14px;font-size:14px}
+    .insp-confirm:disabled{opacity:.4;cursor:not-allowed}
+
+    /* Diagnostic panel (Pareto) - diseño instruccional reforzado */
+    .pareto-explain{display:flex;align-items:flex-start;gap:12px;background:rgba(39,174,96,.1);border:2px solid var(--green);border-radius:8px;padding:12px 14px;margin:10px 0;box-shadow:3px 3px 0 var(--green-dark)}
+    .pareto-explain-portrait{width:54px;height:54px;flex-shrink:0;border-radius:8px;background:linear-gradient(180deg,var(--cream-dark),#dcc898);border:2px solid var(--brown);padding:4px;box-shadow:2px 2px 0 var(--brown-light)}
+    .pareto-explain-portrait img{width:100%;height:100%;object-fit:contain}
+    .pareto-explain-body strong{display:block;font-size:13px;color:var(--green-dark);margin-bottom:3px;letter-spacing:.3px}
+    .pareto-explain-body p{font-size:12.5px;color:var(--brown-dark);line-height:1.5;margin:0}
+    .pareto-principle{position:relative;background:rgba(155,89,182,.1);border-left:4px solid #9B59B6;padding:10px 14px 10px 44px;border-radius:6px;font-size:12.5px;color:var(--brown-dark);line-height:1.5;margin:8px 0}
+    .pareto-principle::before{content:'📐';position:absolute;left:14px;top:10px;font-size:18px}
+    .pareto-principle strong{color:#6e3782}
+    .pareto-task{display:flex;align-items:center;gap:12px;background:rgba(230,126,34,.14);border:2px solid var(--orange,#E67E22);border-radius:8px;padding:10px 14px;margin:10px 0 8px;box-shadow:3px 3px 0 #8b3a0a}
+    .task-badge{background:#E67E22;color:#fff;padding:5px 11px;border-radius:4px;font-size:11px;font-weight:800;letter-spacing:1.5px;flex-shrink:0;text-transform:uppercase;box-shadow:2px 2px 0 #8b3a0a}
+    .task-text{font-size:13px;color:var(--brown-dark);line-height:1.4}
+    .task-text strong{color:#CA6F1E;font-weight:800}
+    .pareto-chart-wrap{position:relative;padding-top:26px}
+    .pareto-pointer{position:absolute;top:0;color:#E67E22;font-size:12px;font-weight:800;text-align:center;animation:bob 1s ease-in-out infinite;z-index:2;pointer-events:none;transform:translateX(-50%);white-space:nowrap;text-shadow:1px 1px 0 rgba(0,0,0,.15);transition:left .4s ease-out}
+    .pareto-chart{display:flex;align-items:flex-end;justify-content:space-around;background:rgba(0,0,0,.04);border:2px solid #8b6914;border-radius:8px;padding:16px 14px;gap:12px;height:230px;margin-bottom:14px}
+    .pareto-bar{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;cursor:pointer;transition:all .2s;border-radius:6px;padding:4px}
+    .pareto-bar:hover{background:rgba(255,255,255,.5)}
+    .pareto-bar.correct{background:rgba(39,174,96,.15);animation:correct-pulse .5s}
+    .pareto-bar.wrong{background:rgba(231,76,60,.15)}
+    .bar-count{font-size:22px;font-weight:800;color:var(--brown-dark);margin-bottom:4px;font-variant-numeric:tabular-nums}
+    .bar-count-label{font-size:9px;color:var(--brown-light);font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px}
+    .bar-fill{width:70%;border-radius:4px 4px 0 0;transition:height .8s cubic-bezier(.34,1.56,.64,1);min-height:4px;border:2px solid var(--brown);border-bottom:none;box-shadow:inset 0 2px 0 rgba(255,255,255,.3)}
+    .bar-fill.llenado{background:#E67E22}
+    .bar-fill.etiqueta{background:#9B59B6}
+    .bar-fill.tapa{background:#3498DB}
+    .bar-label{font-size:12px;font-weight:700;color:var(--brown-dark);margin-top:8px;text-transform:uppercase;letter-spacing:.5px}
+    .bar-pct{font-size:10.5px;font-weight:700;color:var(--brown-light);margin-top:2px;font-variant-numeric:tabular-nums}
+    .pareto-hint{background:rgba(39,174,96,.12);border-left:4px solid var(--green);padding:12px 14px;border-radius:6px;font-size:13px;color:var(--brown-dark);line-height:1.5;display:none;margin-top:10px}
+    .pareto-hint.visible{display:block;animation:slide-down .3s}
+    .pareto-hint strong{color:var(--green-dark)}
+    @keyframes correct-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+
+    /* PHVA panel */
+    .phva-stages{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0;background:rgba(0,0,0,.04);border:2px dashed #8b6914;border-radius:8px;padding:12px 10px}
+    .phva-stage{text-align:center;padding:8px 4px;border-radius:6px;transition:all .3s;opacity:.4}
+    .phva-stage.active{background:rgba(39,174,96,.15);opacity:1}
+    .phva-stage.done{opacity:1}
+    .phva-letter{width:36px;height:36px;margin:0 auto 4px;border-radius:50%;background:#d4c090;border:3px solid #8b6914;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:var(--brown-dark);transition:all .3s}
+    .phva-stage.active .phva-letter{background:var(--green);border-color:var(--green-dark);color:#fff;animation:pulse-step 1.5s infinite}
+    .phva-stage.done .phva-letter{background:var(--green);border-color:var(--green-dark);color:#fff}
+    .phva-stage-name{font-size:11px;font-weight:700;color:var(--brown-dark);text-transform:uppercase;letter-spacing:.8px}
+    .phva-body{background:rgba(255,255,255,.5);border:2px solid #8b6914;border-radius:8px;padding:16px;min-height:200px;box-shadow:3px 3px 0 #8b6914}
+    .phva-body h4{font-size:15px;font-weight:800;color:var(--brown-dark);margin-bottom:8px}
+    .phva-body p{font-size:13px;color:var(--brown-dark);line-height:1.5;margin-bottom:12px}
+    .phva-body strong{color:var(--green-dark)}
+    .phva-slider-wrap{display:flex;flex-direction:column;gap:8px}
+    .phva-slider-label{display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700;color:var(--brown-dark)}
+    .phva-slider-value{font-size:22px;font-weight:800;color:var(--green-dark);font-variant-numeric:tabular-nums}
+    .phva-slider{width:100%;height:10px;border-radius:5px;background:linear-gradient(90deg,var(--green) 0%,#f1c40f 50%,var(--red) 100%);outline:none;appearance:none;border:2px solid var(--brown);box-shadow:2px 2px 0 var(--brown)}
+    .phva-slider::-webkit-slider-thumb{appearance:none;width:24px;height:24px;border-radius:50%;background:#fff;border:3px solid var(--brown);cursor:pointer;box-shadow:2px 2px 0 var(--brown-dark)}
+    .phva-slider::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:#fff;border:3px solid var(--brown);cursor:pointer}
+    .phva-options{display:flex;flex-direction:column;gap:10px}
+    .phva-option{display:flex;align-items:center;gap:14px;padding:12px 14px;background:#fff;border:2px solid #8b6914;border-radius:8px;cursor:pointer;transition:all .15s;font-family:inherit;color:var(--brown-dark);text-align:left;box-shadow:3px 3px 0 #8b6914}
+    .phva-option:hover:not(.selected){background:rgba(255,255,255,.8);transform:translate(-2px,-2px);box-shadow:5px 5px 0 #8b6914}
+    .phva-option.selected{background:rgba(39,174,96,.2);border-color:var(--green);box-shadow:3px 3px 0 var(--green-dark)}
+    .phva-opt-icon{font-size:28px;width:36px;text-align:center;flex-shrink:0}
+    .phva-opt-body{flex:1;min-width:0}
+    .phva-opt-name{font-size:14px;font-weight:700;color:var(--brown-dark);margin-bottom:2px}
+    .phva-opt-desc{font-size:12px;color:var(--brown-light);line-height:1.4}
+    .phva-verify{text-align:center;padding:16px}
+    .phva-verify-result{font-size:40px;font-weight:800;margin:12px 0;font-variant-numeric:tabular-nums}
+    .phva-verify-result.success{color:var(--green-dark)}
+    .phva-verify-result.warning{color:var(--red)}
+    .phva-verify-note{font-size:13px;color:var(--brown);line-height:1.5;margin-bottom:10px}
+    .phva-bars{display:flex;justify-content:space-around;align-items:flex-end;gap:10px;margin:14px 0;padding:12px;background:rgba(0,0,0,.04);border-radius:8px}
+    .phva-compare{text-align:center;flex:1}
+    .phva-compare-label{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--brown-light);margin-bottom:4px;font-weight:700}
+    .phva-compare-val{font-size:24px;font-weight:800;color:var(--brown-dark);margin-bottom:4px}
+    .phva-compare-bar{height:6px;border-radius:3px;margin:0 auto;max-width:80%}
+    .phva-nav{display:flex;justify-content:space-between;align-items:center;margin-top:16px;gap:10px}
+    .phva-nav .btn{padding:10px 18px;font-size:12px}
+
+    /* Feedback modal */
+    .feedback-overlay{position:fixed;inset:0;background:rgba(58,42,16,.85);display:none;align-items:center;justify-content:center;z-index:1000;padding:20px;backdrop-filter:blur(6px)}
+    .feedback-overlay.visible{display:flex;animation:fade-in .3s}
+    @keyframes fade-in{from{opacity:0}to{opacity:1}}
+    .feedback-modal{background:linear-gradient(135deg,var(--cream),var(--cream-dark));border:4px solid var(--brown);border-radius:14px;max-width:720px;width:100%;padding:28px;box-shadow:8px 8px 0 var(--brown-dark),12px 12px 0 rgba(58,42,16,.3);animation:pop-up-fb .4s cubic-bezier(.18,.89,.32,1.28);max-height:90vh;overflow-y:auto}
+    @keyframes pop-up-fb{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+    .fb-celebration{text-align:center;margin-bottom:18px}
+    .fb-icon{font-size:48px;margin-bottom:6px;filter:drop-shadow(3px 3px 0 rgba(90,74,42,.3))}
+    .fb-title{font-size:24px;font-weight:800;color:var(--green-dark);letter-spacing:.3px}
+    .fb-subtitle{font-size:14px;color:var(--brown);margin-top:8px;line-height:1.5}
+    .fb-question-wrap{display:flex;gap:16px;align-items:flex-start;background:rgba(255,255,255,.45);border:2px dashed #8b6914;border-radius:10px;padding:16px;margin-bottom:18px}
+    .fb-hugui-portrait{width:88px;height:88px;flex-shrink:0;background:linear-gradient(180deg,var(--cream-dark),#dcc898);border:3px solid var(--brown);border-radius:8px;display:flex;align-items:center;justify-content:center;padding:6px;box-shadow:3px 3px 0 var(--brown-light)}
+    .fb-hugui-portrait img{width:100%;height:100%;object-fit:contain}
+    .fb-question-content{flex:1;min-width:0}
+    .fb-speaker{font-size:11px;font-weight:800;color:#8b6914;letter-spacing:1.5px;margin-bottom:8px;padding-bottom:6px;border-bottom:2px dashed #c4a86a;text-transform:uppercase}
+    .fb-question{font-size:15px;font-weight:700;color:var(--brown-dark);line-height:1.5}
+    .fb-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:16px}
+    .fb-opt{background:linear-gradient(180deg,#fff7e0,#f0d8a0);color:var(--brown-dark);border:2px solid #8b6914;padding:14px 10px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;border-radius:6px;transition:all .2s;box-shadow:3px 3px 0 #8b6914}
+    .fb-opt:hover:not(:disabled){background:linear-gradient(180deg,var(--gold),#a87a1e);color:#fff;transform:translate(-2px,-2px);box-shadow:5px 5px 0 #8b6914}
+    .fb-opt.correct{background:linear-gradient(180deg,var(--green),var(--green-dark));color:#fff;border-color:var(--green-darker);box-shadow:3px 3px 0 var(--green-darker);animation:correct-pulse .5s}
+    .fb-opt.chosen-wrong{background:linear-gradient(180deg,var(--gold),#a87a1e);color:#fff;border-color:var(--brown);box-shadow:3px 3px 0 var(--brown)}
+    .fb-opt:disabled{cursor:not-allowed}
+    .fb-explanation{padding:16px;background:rgba(39,174,96,.1);border-left:4px solid var(--green);border-radius:6px;margin-top:12px;font-size:14px;color:var(--brown-dark);line-height:1.6;display:none}
+    .fb-explanation.visible{display:block;animation:slide-down .3s}
+    @keyframes slide-down{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+    .fb-explanation strong{color:var(--green-dark)}
+    .fb-continue{margin-top:18px;display:none;width:100%;padding:14px;font-size:14px}
+    .fb-continue.visible{display:block;animation:slide-up .3s .2s backwards}
+    @keyframes slide-up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+    @media (max-width:980px){
+      .reto-main{grid-template-columns:1fr;height:auto;overflow:visible}
+      body{overflow:auto}
+      .metrics-top{grid-template-columns:repeat(2,1fr)}
+      .fb-question-wrap{flex-direction:column;align-items:center;text-align:center}
+      .stepper{flex-wrap:wrap}
+      .clipboard{position:static;margin-bottom:10px}
+    }
+  </style>
+</head>
+<body>
+
+  <header class="reto-header">
+    <button class="btn-back" onclick="window.location.href='index.html'">◀ Salir</button>
+    <div class="reto-title">
+      <span class="reto-badge">Reto 2 · Calidad</span>
+      <h1>Aplica mejora continua (PHVA)</h1>
+    </div>
+  </header>
+
+  <main class="reto-main">
+
+    <aside class="hugui-side">
+      <div class="hugui-portrait"><img src="static/img/avatars/buhotutor.png" alt="Hugui"></div>
+      <div class="hugui-speaker">🦉 Hugui · Tu tutor</div>
+      <div class="hugui-text" id="hugui-text">¡Ya resolvimos el cuello! Pero al producir más rápido, aparece un nuevo problema: <strong>un cliente devolvió un lote por defectos</strong>. Primero necesitamos <strong>inspeccionar 6 botellas</strong> y encontrar qué tipo de defecto se está repitiendo. Haz click en cada botella para revisarla.</div>
+      <div class="hugui-hint">
+        <strong>💡 Tip:</strong> mira con atención el nivel de llenado, la posición de la etiqueta y la tapa de cada botella.
+      </div>
+    </aside>
+
+    <section class="game-side">
+
+      <!-- Recap del reto 1 -->
+      <div class="recap-banner">
+        <span class="recap-icon">🔗</span>
+        <span>Viniendo del Reto 1: <strong>el cuello de botella ya está resuelto</strong>. Ahora Cervecería UA produce más, pero con el ritmo alto aparecen <strong>defectos de calidad</strong>.</span>
+      </div>
+
+      <div class="stepper" id="stepper">
+        <div class="step-item active" data-step="1">
+          <div class="step-circle"><span class="step-emoji">🔍</span></div>
+          <div class="step-info"><div class="step-label">Paso 1</div><div class="step-name">Inspeccionar</div></div>
+        </div>
+        <div class="step-divider"></div>
+        <div class="step-item" data-step="2">
+          <div class="step-circle"><span class="step-emoji">📊</span></div>
+          <div class="step-info"><div class="step-label">Paso 2</div><div class="step-name">Diagnosticar</div></div>
+        </div>
+        <div class="step-divider"></div>
+        <div class="step-item" data-step="3">
+          <div class="step-circle"><span class="step-emoji">🔄</span></div>
+          <div class="step-info"><div class="step-label">Paso 3</div><div class="step-name">Aplicar PHVA</div></div>
+        </div>
+        <div class="step-divider"></div>
+        <div class="step-item" data-step="4">
+          <div class="step-circle"><span class="step-emoji">✅</span></div>
+          <div class="step-info"><div class="step-label">Paso 4</div><div class="step-name">Reflexionar</div></div>
+        </div>
+      </div>
+
+      <div class="metrics-top">
+        <div class="metric" id="metric-inspected">
+          <div class="metric-label">Inspeccionadas</div>
+          <div class="metric-value" id="inspected-value">0 / 6</div>
+          <div class="metric-sub">botellas</div>
+        </div>
+        <div class="metric" id="metric-defects">
+          <div class="metric-label">Defectos</div>
+          <div class="metric-value" id="defects-value">—</div>
+          <div class="metric-sub">detectados</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Meta</div>
+          <div class="metric-value" style="color:#27AE60">≤ 15%</div>
+          <div class="metric-sub">de defectos</div>
+        </div>
+        <div class="metric" id="metric-phva">
+          <div class="metric-label">PHVA</div>
+          <div class="metric-value" id="phva-value" style="font-size:14px;color:#8b7340">Pendiente</div>
+          <div class="metric-sub">ciclo</div>
+        </div>
+      </div>
+
+      <div class="scene-container" id="scene-container">
+        <canvas id="scene-canvas"></canvas>
+        <div class="scene-pointer" id="scene-pointer">
+          <div class="pointer-bubble" id="pointer-text">¡Aquí!</div>
+          <div class="pointer-arrow"></div>
+        </div>
+        <div class="observe-overlay" id="observe-overlay">
+          <div class="observe-icon">🔍</div>
+          <div class="observe-text">Inspecciona cada botella</div>
+        </div>
+        <div class="clipboard" id="clipboard">
+          <h4>📋 Clipboard de inspección</h4>
+          <div class="clipboard-grid" id="clipboard-grid"></div>
+        </div>
+      </div>
+
+      <div class="actions-bottom">
+        <button class="btn" id="btn-reset">↺ Reiniciar todo</button>
+        <button class="btn btn-primary" id="btn-next" disabled>Continuar →</button>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Inspection modal -->
+  <div class="modal-overlay" id="insp-overlay"></div>
+  <div class="modal" id="insp-modal">
+    <div class="modal-header">
+      <h3 id="insp-title">Botella #1</h3>
+      <button class="modal-close" id="insp-close">✕</button>
+    </div>
+    <div class="insp-bottle-preview">
+      <div class="insp-bottle-art" id="insp-bottle-art"></div>
+      <div class="insp-bottle-info">
+        <h4>Revisa esta botella</h4>
+        <p>Observa la imagen y, para cada criterio, decide si la botella <strong>cumple</strong> el estándar o <strong>tiene defecto</strong>.</p>
+      </div>
+    </div>
+    <div class="insp-criteria-title">Criterios de calidad</div>
+    <div class="insp-criteria">
+      <div class="insp-row" data-criteria="fill">
+        <div class="insp-row-icon">💧</div>
+        <div class="insp-row-body">
+          <div class="insp-row-name">Nivel de llenado</div>
+          <div class="insp-row-desc">El líquido debe llegar justo al cuello, sin faltante.</div>
+        </div>
+        <div class="insp-buttons">
+          <button class="insp-btn" data-value="pass">✓ Cumple</button>
+          <button class="insp-btn" data-value="fail">✗ Defecto</button>
+        </div>
+      </div>
+      <div class="insp-row" data-criteria="label">
+        <div class="insp-row-icon">🏷️</div>
+        <div class="insp-row-body">
+          <div class="insp-row-name">Etiqueta</div>
+          <div class="insp-row-desc">La etiqueta debe estar centrada y recta.</div>
+        </div>
+        <div class="insp-buttons">
+          <button class="insp-btn" data-value="pass">✓ Cumple</button>
+          <button class="insp-btn" data-value="fail">✗ Defecto</button>
+        </div>
+      </div>
+      <div class="insp-row" data-criteria="cap">
+        <div class="insp-row-icon">🔒</div>
+        <div class="insp-row-body">
+          <div class="insp-row-name">Tapa</div>
+          <div class="insp-row-desc">La tapa debe estar correctamente colocada y sellada.</div>
+        </div>
+        <div class="insp-buttons">
+          <button class="insp-btn" data-value="pass">✓ Cumple</button>
+          <button class="insp-btn" data-value="fail">✗ Defecto</button>
+        </div>
+      </div>
+    </div>
+    <button class="btn btn-primary insp-confirm" id="insp-confirm" disabled>Confirmar inspección</button>
+  </div>
+
+  <!-- Diagnostic modal (Pareto) — diseño instruccional reforzado -->
+  <div class="modal-overlay" id="diag-overlay"></div>
+  <div class="modal" id="diag-modal">
+    <div class="modal-header">
+      <h3>📊 Diagnóstico con Pareto</h3>
+    </div>
+    <!-- Bloque 1: qué estás viendo -->
+    <div class="pareto-explain">
+      <div class="pareto-explain-portrait"><img src="static/img/avatars/buhotutor.png" alt="Hugui"></div>
+      <div class="pareto-explain-body">
+        <strong>¿Qué estoy viendo?</strong>
+        <p>Cada barra es un <strong>tipo de defecto</strong> que encontraste en las 6 botellas. La <strong>altura</strong> indica cuántas botellas tuvieron ese problema. Las barras están ordenadas de mayor a menor.</p>
+      </div>
+    </div>
+    <!-- Bloque 2: el principio teórico -->
+    <div class="pareto-principle">
+      <strong>Principio de Pareto (regla 80/20):</strong> el 20% de las causas genera el 80% de los problemas. Atacar el defecto <strong>más frecuente</strong> te da el mayor impacto posible con el mismo esfuerzo.
+    </div>
+    <!-- Bloque 3: la tarea concreta -->
+    <div class="pareto-task">
+      <span class="task-badge">🎯 Tarea</span>
+      <span class="task-text">Identifica el problema principal: <strong>haz click en la barra más alta</strong>.</span>
+    </div>
+    <!-- Gráfico con flecha apuntando al más alto -->
+    <div class="pareto-chart-wrap">
+      <div class="pareto-pointer" id="pareto-pointer">⬇ ¡El más alto!</div>
+      <div class="pareto-chart" id="pareto-chart"></div>
+    </div>
+    <div class="pareto-hint" id="pareto-hint"></div>
+    <button class="btn btn-primary" id="diag-continue" style="margin-top:14px;width:100%;padding:14px;font-size:14px;display:none">Aplicar Mejora Continua (PHVA) →</button>
+  </div>
+
+  <!-- PHVA modal -->
+  <div class="modal-overlay" id="phva-overlay"></div>
+  <div class="modal" id="phva-modal" style="max-width:680px">
+    <div class="modal-header">
+      <h3>🔄 Aplicar Mejora Continua · PHVA</h3>
+    </div>
+    <div class="phva-stages" id="phva-stages">
+      <div class="phva-stage active" data-s="0"><div class="phva-letter">P</div><div class="phva-stage-name">Planificar</div></div>
+      <div class="phva-stage" data-s="1"><div class="phva-letter">H</div><div class="phva-stage-name">Hacer</div></div>
+      <div class="phva-stage" data-s="2"><div class="phva-letter">V</div><div class="phva-stage-name">Verificar</div></div>
+      <div class="phva-stage" data-s="3"><div class="phva-letter">A</div><div class="phva-stage-name">Actuar</div></div>
+    </div>
+    <div class="phva-body" id="phva-body"></div>
+    <div class="phva-nav">
+      <button class="btn" id="phva-prev" disabled>← Anterior</button>
+      <button class="btn btn-primary" id="phva-next">Siguiente →</button>
+    </div>
+  </div>
+
+  <!-- Feedback modal -->
+  <div class="feedback-overlay" id="feedback-overlay">
+    <div class="feedback-modal">
+      <div class="fb-celebration">
+        <div class="fb-icon">🎉</div>
+        <div class="fb-title">¡Calidad estabilizada!</div>
+        <div class="fb-subtitle" id="fb-subtitle">Aplicaste un ciclo completo de mejora continua en Cervecería UA.</div>
+      </div>
+      <div class="fb-question-wrap">
+        <div class="fb-hugui-portrait"><img src="static/img/avatars/buhotutor.png" alt="Hugui"></div>
+        <div class="fb-question-content">
+          <div class="fb-speaker">🦉 Hugui pregunta</div>
+          <div class="fb-question">En el ciclo PHVA que acabas de aplicar, ¿cuál paso fue el más crítico para <strong>garantizar que la mejora se mantenga</strong> en el tiempo?</div>
+        </div>
+      </div>
+      <div class="fb-options" id="fb-options">
+        <button class="fb-opt" data-correct="false" data-explain="<strong>¡Buena intuición!</strong> Planificar es donde nace todo — sin una meta clara no hay referencia para medir el éxito. Fue crítico, sin duda. Pero el paso que realmente <strong>asegura que la mejora no se pierda</strong> es el último: <strong>Actuar</strong>, donde estandarizas lo que funcionó.">Planificar</button>
+        <button class="fb-opt" data-correct="false" data-explain="<strong>¡Pensaste en acción!</strong> Hacer (ejecutar el cambio) es el momento donde todo puede salir bien o mal, y es vital. Pero una mejora que solo se hace una vez no perdura. El paso que <strong>garantiza la permanencia</strong> es <strong>Actuar</strong> — estandarizar lo aprendido.">Hacer</button>
+        <button class="fb-opt" data-correct="false" data-explain="<strong>¡Gran elección!</strong> Verificar es clave — sin medir, no sabes si funcionó. Es el paso que convierte una opinión en una decisión con evidencia. Pero una vez verificado, todavía falta el paso que <strong>evita retroceder</strong>: <strong>Actuar</strong>, estandarizando el nuevo procedimiento.">Verificar</button>
+        <button class="fb-opt" data-correct="true" data-explain="<strong>¡Exacto!</strong> Actuar es el paso que <strong>estandariza</strong> la mejora para que no se pierda — convirtiéndola en la nueva forma normal de trabajar. Sin este paso, la mejora se queda como un experimento aislado. Al estandarizar, garantizas que todos los turnos, operarios y lotes futuros sigan la mejor práctica. Eso es lo que hace que la mejora continua sea <em>continua</em>.">Actuar</button>
+      </div>
+      <div class="fb-explanation" id="fb-explanation"></div>
+      <button class="btn btn-primary fb-continue" id="fb-continue">Continuar al Reto 3 →</button>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+  // ════════════════════════════════════════════════════════════
+  // MODELO
+  // ════════════════════════════════════════════════════════════
+  const BOTTLES = [
+    { id:1, fill:'low',     label:'ok',      cap:'ok'      },
+    { id:2, fill:'low',     label:'tilted',  cap:'ok'      },
+    { id:3, fill:'ok',      label:'ok',      cap:'ok'      },
+    { id:4, fill:'low',     label:'ok',      cap:'ok'      },
+    { id:5, fill:'ok',      label:'tilted',  cap:'ok'      },
+    { id:6, fill:'low',     label:'ok',      cap:'tilted'  }
+  ];
+  // Defectos totales: fill=4, label=2, cap=1 → principal = fill
+
+  const INTERVENTIONS = [
+    { id:'calibrar',   name:'Calibrar la llenadora',         icon:'🔧', target:'fill',  desc:'Ajustar sensores y válvulas para mantener el nivel exacto.' },
+    { id:'proveedor',  name:'Cambiar proveedor de etiquetas',icon:'🏷️', target:'label', desc:'Nuevo proveedor con adhesivo y alineación mejorada.' },
+    { id:'taponadora', name:'Reemplazar taponadora',         icon:'🔒', target:'cap',   desc:'Equipo nuevo para tapar con presión uniforme.' }
+  ];
+
+  let state = {
+    step: 1,
+    bottles: BOTTLES.map(b => ({
+      ...b,
+      inspected: false,
+      userFindings: { fill:null, label:null, cap:null }
+    })),
+    currentBottleIdx: null,
+    mainDefectIdentified: false,
+    phvaStage: 0,
+    phvaMeta: 15,
+    phvaIntervention: null,
+    phvaVerified: false,
+    phvaActed: false,
+    won: false
+  };
+
+  function countDefects(){
+    let byType = { fill:0, label:0, cap:0 };
+    state.bottles.forEach(b => {
+      if (b.fill !== 'ok') byType.fill++;
+      if (b.label !== 'ok') byType.label++;
+      if (b.cap !== 'ok') byType.cap++;
+    });
+    return byType;
+  }
+  function totalDefects(){
+    const c = countDefects();
+    return c.fill + c.label + c.cap;
+  }
+  function defectRate(){
+    // % de checks defectuosos sobre total de checks (6 botellas × 3 criterios = 18)
+    return Math.round((totalDefects() / 18) * 100);
+  }
+
+  // ════════════════════════════════════════════════════════════
+  // THREE.JS — Mesa de inspección con 6 botellas
+  // ════════════════════════════════════════════════════════════
+  const container = document.getElementById('scene-container');
+  const canvas = document.getElementById('scene-canvas');
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true });
+  renderer.setPixelRatio(window.devicePixelRatio);
+
+  const scene = new THREE.Scene();
+  scene.background = null;
+
+  const frustumSize = 9;
+  const camera = new THREE.OrthographicCamera();
+  function updateCameraFrustum(){
+    const w = container.clientWidth, h = container.clientHeight;
+    const aspect = w / h;
+    camera.left = -frustumSize*aspect/2;
+    camera.right = frustumSize*aspect/2;
+    camera.top = frustumSize/2;
+    camera.bottom = -frustumSize/2;
+    camera.near = 0.1; camera.far = 100;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
+  }
+  camera.position.set(10, 9, 10);
+  camera.lookAt(0, 0.8, 0);
+  updateCameraFrustum();
+
+  scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+  const sun = new THREE.DirectionalLight(0xfff0d8, 0.6);
+  sun.position.set(6, 14, 5); scene.add(sun);
+  const fill = new THREE.DirectionalLight(0xaaccff, 0.2);
+  fill.position.set(-6, 10, -4); scene.add(fill);
+
+  // Piso
+  const floor = new THREE.Mesh(new THREE.BoxGeometry(18, 0.3, 8), new THREE.MeshLambertMaterial({ color:0xd4c090 }));
+  floor.position.y = -0.15; scene.add(floor);
+
+  // Mesa de inspección
+  const tableTop = new THREE.Mesh(new THREE.BoxGeometry(12, 0.3, 3), new THREE.MeshLambertMaterial({ color:0x8b6914 }));
+  tableTop.position.set(0, 0.9, 0); scene.add(tableTop);
+  // Patas
+  [[-5.5,-1],[-5.5,1],[5.5,-1],[5.5,1]].forEach(p => {
+    const leg = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.9, 0.3), new THREE.MeshLambertMaterial({ color:0x5a4a2a }));
+    leg.position.set(p[0], 0.45, p[1]);
+    scene.add(leg);
+  });
+
+  // Cartel arriba
+  const signCanvas = document.createElement('canvas');
+  signCanvas.width = 512; signCanvas.height = 96;
+  const sc = signCanvas.getContext('2d');
+  sc.fillStyle = 'rgba(58,42,16,0.92)';
+  roundRect(sc, 0, 0, 512, 96, 14); sc.fill();
+  sc.fillStyle = '#27AE60';
+  sc.font = 'bold 30px "Google Sans", sans-serif';
+  sc.textAlign = 'center'; sc.textBaseline = 'middle';
+  sc.fillText('🏭 ESTACIÓN DE INSPECCIÓN', 256, 34);
+  sc.fillStyle = '#f5e6c8';
+  sc.font = 'bold 22px "Google Sans", sans-serif';
+  sc.fillText('Cervecería UA · Control de Calidad', 256, 72);
+  const signTex = new THREE.CanvasTexture(signCanvas);
+  const signSprite = new THREE.Sprite(new THREE.SpriteMaterial({ map:signTex, transparent:true }));
+  signSprite.scale.set(4.5, 0.85, 1);
+  signSprite.position.set(0, 3.8, 0);
+  scene.add(signSprite);
+
+  function roundRect(ctx, x, y, w, h, r){
+    ctx.beginPath();
+    ctx.moveTo(x+r, y);
+    ctx.arcTo(x+w, y, x+w, y+h, r);
+    ctx.arcTo(x+w, y+h, x, y+h, r);
+    ctx.arcTo(x, y+h, x, y, r);
+    ctx.arcTo(x, y, x+w, y, r);
+    ctx.closePath();
+  }
+
+  // Construcción de botellas 3D
+  const bottleMeshes = [];
+  state.bottles.forEach((b, i) => {
+    const g = new THREE.Group();
+    const bottleX = -4.5 + i * 1.8;
+    g.position.set(bottleX, 1.05, 0);
+
+    // Vidrio (body)
+    const glassMat = new THREE.MeshLambertMaterial({ color:0x4a7c4a, transparent:true, opacity:0.55 });
+    const body = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.34, 1.2, 16), glassMat);
+    body.position.y = 0.6;
+    g.add(body);
+
+    // Hombro
+    const shoulder = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.3, 0.25, 12), glassMat);
+    shoulder.position.y = 1.325;
+    g.add(shoulder);
+
+    // Cuello
+    const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.3, 12), glassMat);
+    neck.position.y = 1.6;
+    g.add(neck);
+
+    // Líquido (visible según defecto)
+    const fillLevel = b.fill === 'low' ? 0.6 : b.fill === 'high' ? 1.2 : 1.05;
+    const liquid = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.28, 0.32, fillLevel, 16),
+      new THREE.MeshLambertMaterial({ color:0xd4a843 })
+    );
+    liquid.position.y = fillLevel / 2 + 0.02;
+    g.add(liquid);
+
+    // Tapa
+    if (b.cap !== 'missing'){
+      const capMesh = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.13, 0.13, 0.12, 12),
+        new THREE.MeshLambertMaterial({ color:0xC0392B })
+      );
+      capMesh.position.y = 1.81;
+      if (b.cap === 'tilted'){
+        capMesh.rotation.z = 0.35;
+        capMesh.position.x = 0.05;
+      }
+      g.add(capMesh);
+    }
+
+    // Etiqueta
+    if (b.label !== 'missing'){
+      const labelMesh = new THREE.Mesh(
+        new THREE.BoxGeometry(0.6, 0.45, 0.02),
+        new THREE.MeshLambertMaterial({ color:0xf5e6c8 })
+      );
+      labelMesh.position.set(0, 0.6, 0.36);
+      if (b.label === 'tilted'){ labelMesh.rotation.z = 0.2; }
+      g.add(labelMesh);
+      // Detalle rojo de etiqueta
+      const labelAcc = new THREE.Mesh(
+        new THREE.BoxGeometry(0.55, 0.08, 0.022),
+        new THREE.MeshLambertMaterial({ color:0x27AE60 })
+      );
+      labelAcc.position.set(0, 0.7, 0.37);
+      if (b.label === 'tilted'){ labelAcc.rotation.z = 0.2; labelAcc.position.y = 0.68; }
+      g.add(labelAcc);
+    }
+
+    // Plataforma visual debajo (marca del número)
+    const platCanvas = document.createElement('canvas');
+    platCanvas.width = 128; platCanvas.height = 64;
+    const pc = platCanvas.getContext('2d');
+    pc.fillStyle = 'rgba(58,42,16,0.85)';
+    roundRect(pc, 0, 0, 128, 64, 10); pc.fill();
+    pc.fillStyle = '#f5e6c8';
+    pc.font = 'bold 36px "Google Sans", sans-serif';
+    pc.textAlign = 'center'; pc.textBaseline = 'middle';
+    pc.fillText('B' + b.id, 64, 32);
+    const platTex = new THREE.CanvasTexture(platCanvas);
+    const platSprite = new THREE.Sprite(new THREE.SpriteMaterial({ map:platTex, transparent:true }));
+    platSprite.scale.set(0.7, 0.35, 1);
+    platSprite.position.set(0, -0.2, 0);
+    g.add(platSprite);
+
+    // Collider invisible más grande para facilitar el click
+    const collider = new THREE.Mesh(
+      new THREE.BoxGeometry(0.8, 2.2, 0.8),
+      new THREE.MeshBasicMaterial({ visible:false })
+    );
+    collider.position.y = 0.9;
+    collider.userData.idx = i;
+    g.add(collider);
+
+    scene.add(g);
+    bottleMeshes.push({ group:g, collider, data:b });
+  });
+
+  // Efectos: halo verde si inspeccionada, pulso si activa
+  function updateBottleVisuals(){
+    bottleMeshes.forEach((m, i) => {
+      const st = state.bottles[i];
+      // Si inspeccionada, agregar halo sutil (rotación leve diferencial)
+      if (st.inspected){
+        m.group.rotation.y = 0;
+      }
+    });
+  }
+
+  // Raycaster
+  const raycaster = new THREE.Raycaster();
+  const mouse = new THREE.Vector2();
+  canvas.addEventListener('click', (e) => {
+    if (state.step !== 1) return;
+    const rect = canvas.getBoundingClientRect();
+    mouse.x = ((e.clientX-rect.left)/rect.width)*2 - 1;
+    mouse.y = -((e.clientY-rect.top)/rect.height)*2 + 1;
+    raycaster.setFromCamera(mouse, camera);
+    const hits = raycaster.intersectObjects(bottleMeshes.map(m => m.collider));
+    if (hits.length > 0) onBottleClick(hits[0].object.userData.idx);
+  });
+  canvas.addEventListener('pointermove', (e) => {
+    if (state.step !== 1) { canvas.style.cursor = 'grab'; return; }
+    const rect = canvas.getBoundingClientRect();
+    mouse.x = ((e.clientX-rect.left)/rect.width)*2 - 1;
+    mouse.y = -((e.clientY-rect.top)/rect.height)*2 + 1;
+    raycaster.setFromCamera(mouse, camera);
+    const hits = raycaster.intersectObjects(bottleMeshes.map(m => m.collider));
+    canvas.style.cursor = hits.length > 0 ? 'pointer' : 'grab';
+  });
+
+  // Rotación sutil
+  let isDragging = false, dragStart = { x:0, angle:0 };
+  let cameraAngle = Math.PI / 4;
+  canvas.addEventListener('pointerdown', (e) => { isDragging = true; dragStart.x = e.clientX; dragStart.angle = cameraAngle; });
+  window.addEventListener('pointerup', () => { isDragging = false; });
+  window.addEventListener('pointermove', (e) => {
+    if (!isDragging) return;
+    const dx = e.clientX - dragStart.x;
+    cameraAngle = dragStart.angle + dx * 0.005;
+    cameraAngle = Math.max(Math.PI*0.2, Math.min(Math.PI*0.45, cameraAngle));
+    const r = Math.sqrt(100 + 100);
+    camera.position.x = r * Math.sin(cameraAngle) * Math.cos(Math.PI/6);
+    camera.position.z = r * Math.cos(cameraAngle) * Math.cos(Math.PI/6);
+    camera.lookAt(0, 0.8, 0);
+  });
+
+  // Puntero 3D→2D
+  const tempVec = new THREE.Vector3();
+  function worldToScreen(x, y, z){
+    tempVec.set(x, y, z).project(camera);
+    const rect = canvas.getBoundingClientRect();
+    return { x:(tempVec.x*0.5+0.5)*rect.width, y:(-tempVec.y*0.5+0.5)*rect.height };
+  }
+  let pointerTarget = null;
+  function setPointer(x, y, z, text){
+    pointerTarget = { x, y, z };
+    document.getElementById('pointer-text').textContent = text;
+    document.getElementById('scene-pointer').classList.add('visible');
+  }
+  function hidePointer(){ pointerTarget = null; document.getElementById('scene-pointer').classList.remove('visible'); }
+  function updatePointerPosition(){
+    if (!pointerTarget) return;
+    const s = worldToScreen(pointerTarget.x, pointerTarget.y, pointerTarget.z);
+    const p = document.getElementById('scene-pointer');
+    p.style.left = s.x + 'px';
+    p.style.top = (s.y - 14) + 'px';
+  }
+
+  // Animación: pulsación sutil en botellas no inspeccionadas durante paso 1
+  function animate(){
+    requestAnimationFrame(animate);
+    if (state.step === 1){
+      const t = performance.now() * 0.002;
+      bottleMeshes.forEach((m, i) => {
+        if (!state.bottles[i].inspected){
+          m.group.position.y = 1.05 + Math.sin(t + i * 0.8) * 0.03;
+        } else {
+          m.group.position.y = 1.05;
+        }
+      });
+    }
+    updatePointerPosition();
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  window.addEventListener('resize', updateCameraFrustum);
+
+  // ════════════════════════════════════════════════════════════
+  // UI LOGIC
+  // ════════════════════════════════════════════════════════════
+  const $ = (id) => document.getElementById(id);
+
+  function setHugui(text){ $('hugui-text').innerHTML = text; }
+
+  function setStep(n){
+    state.step = n;
+    document.querySelectorAll('.step-item').forEach(el => {
+      const s = parseInt(el.dataset.step);
+      el.classList.toggle('active', s === n);
+      el.classList.toggle('done', s < n);
+    });
+    document.querySelectorAll('.step-divider').forEach((el, idx) => {
+      el.classList.toggle('done', idx < n - 1);
+    });
+    updatePointerForStep();
+  }
+
+  function updatePointerForStep(){
+    if (state.won){ hidePointer(); return; }
+    if (state.step === 1){
+      const nextIdx = state.bottles.findIndex(b => !b.inspected);
+      if (nextIdx >= 0){
+        const bottleX = -4.5 + nextIdx * 1.8;
+        setPointer(bottleX, 2.6, 0, 'Click para inspeccionar');
+      } else {
+        hidePointer();
+      }
+    } else {
+      hidePointer();
+    }
+  }
+
+  function renderClipboard(){
+    const grid = $('clipboard-grid');
+    grid.innerHTML = '';
+    state.bottles.forEach((b, i) => {
+      const slot = document.createElement('div');
+      slot.className = 'clip-slot';
+      if (b.inspected){
+        slot.classList.add('inspected');
+        const userDefectsFound = Object.values(b.userFindings).filter(v => v === 'fail').length;
+        if (userDefectsFound > 0) slot.classList.add('has-defect');
+        slot.textContent = userDefectsFound > 0 ? '✗' : '✓';
+      } else {
+        slot.textContent = 'B' + b.id;
+      }
+      grid.appendChild(slot);
+    });
+  }
+
+  function renderMetrics(){
+    const insp = state.bottles.filter(b => b.inspected).length;
+    $('inspected-value').textContent = insp + ' / 6';
+    $('metric-inspected').classList.toggle('success', insp === 6);
+
+    if (insp === 6){
+      const def = totalDefects();
+      const rate = defectRate();
+      $('defects-value').textContent = def + ' (' + rate + '%)';
+      $('metric-defects').classList.add(rate > 15 ? 'warning' : 'success');
+    } else {
+      $('defects-value').textContent = '—';
+    }
+
+    // PHVA estado
+    if (state.phvaActed){
+      $('phva-value').textContent = 'Completado ✓';
+      $('phva-value').style.color = '#1E8449';
+      $('metric-phva').classList.add('success');
+    } else if (state.phvaIntervention){
+      $('phva-value').textContent = 'En progreso';
+      $('phva-value').style.color = '#E67E22';
+    }
+
+    // Botón continuar
+    const btn = $('btn-next');
+    if (state.step === 1){
+      btn.disabled = insp < 6;
+      btn.textContent = insp < 6 ? `Inspecciona ${6-insp} más →` : 'Ver diagnóstico →';
+      btn.classList.toggle('ready', insp === 6);
+    } else if (state.step === 4 && state.phvaActed){
+      btn.disabled = false;
+      btn.textContent = 'Ver reflexión →';
+      btn.classList.add('ready');
+    } else {
+      btn.disabled = true;
+    }
+  }
+
+  // ── CLICK EN BOTELLA ──
+  function onBottleClick(idx){
+    if (state.bottles[idx].inspected){
+      setHugui(`Ya inspeccionaste la <strong>Botella #${idx+1}</strong>. Revisa las demás que aún faltan — sigue la flecha verde.`);
+      return;
+    }
+    state.currentBottleIdx = idx;
+    openInspection(idx);
+  }
+
+  // ── INSPECTION MODAL ──
+  function openInspection(idx){
+    const b = state.bottles[idx];
+    $('insp-title').textContent = `Botella #${b.id} · Cervecería UA`;
+    // Art 2D de la botella con sus defectos
+    $('insp-bottle-art').innerHTML = renderBottleSVG(b);
+    // Reset marcas
+    document.querySelectorAll('.insp-btn').forEach(btn => btn.classList.remove('selected-pass','selected-fail'));
+    $('insp-confirm').disabled = true;
+    $('insp-modal').classList.add('visible');
+    $('insp-overlay').classList.add('visible');
+  }
+
+  function renderBottleSVG(b){
+    const fillH = b.fill === 'low' ? 40 : b.fill === 'high' ? 95 : 80;
+    const capTransform = b.cap === 'tilted' ? 'rotate(20 40 12)' : '';
+    const capDisplay = b.cap === 'missing' ? 'none' : 'block';
+    const labelTransform = b.label === 'tilted' ? 'rotate(12 40 85)' : '';
+    const labelDisplay = b.label === 'missing' ? 'none' : 'block';
+    return `<svg viewBox="0 0 80 140" xmlns="http://www.w3.org/2000/svg">
+      <!-- Cuerpo (vidrio) -->
+      <rect x="18" y="40" width="44" height="80" rx="6" fill="#4a7c4a" fill-opacity="0.35" stroke="#2a4a2a" stroke-width="2"/>
+      <!-- Líquido -->
+      <rect x="20" y="${120 - fillH}" width="40" height="${fillH}" fill="#d4a843" rx="2"/>
+      <!-- Hombro -->
+      <path d="M 18 45 Q 18 30 30 30 L 50 30 Q 62 30 62 45 Z" fill="#4a7c4a" fill-opacity="0.35" stroke="#2a4a2a" stroke-width="2"/>
+      <!-- Cuello -->
+      <rect x="32" y="15" width="16" height="18" fill="#4a7c4a" fill-opacity="0.35" stroke="#2a4a2a" stroke-width="2"/>
+      <!-- Tapa -->
+      <g style="display:${capDisplay}" transform="${capTransform}">
+        <rect x="30" y="8" width="20" height="10" fill="#C0392B" stroke="#6e1f14" stroke-width="2" rx="2"/>
+      </g>
+      <!-- Etiqueta -->
+      <g style="display:${labelDisplay}" transform="${labelTransform}">
+        <rect x="22" y="70" width="36" height="30" fill="#f5e6c8" stroke="#8b6914" stroke-width="1.5" rx="2"/>
+        <rect x="24" y="80" width="32" height="6" fill="#27AE60"/>
+        <text x="40" y="93" text-anchor="middle" font-family="Google Sans" font-size="6" font-weight="700" fill="#5a4a2a">UA CERVEZA</text>
+      </g>
+    </svg>`;
+  }
+
+  // Marcar criterios
+  document.querySelectorAll('.insp-row').forEach(row => {
+    row.querySelectorAll('.insp-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        row.querySelectorAll('.insp-btn').forEach(b => b.classList.remove('selected-pass','selected-fail'));
+        btn.classList.add(btn.dataset.value === 'pass' ? 'selected-pass' : 'selected-fail');
+        checkInspectionComplete();
+      });
+    });
+  });
+
+  function checkInspectionComplete(){
+    const rows = document.querySelectorAll('.insp-row');
+    let allMarked = true;
+    rows.forEach(r => {
+      if (!r.querySelector('.selected-pass') && !r.querySelector('.selected-fail')) allMarked = false;
+    });
+    $('insp-confirm').disabled = !allMarked;
+  }
+
+  $('insp-confirm').addEventListener('click', () => {
+    const idx = state.currentBottleIdx;
+    const b = state.bottles[idx];
+    const findings = {};
+    document.querySelectorAll('.insp-row').forEach(r => {
+      const crit = r.dataset.criteria;
+      const selected = r.querySelector('.selected-pass') ? 'pass' : 'fail';
+      findings[crit] = selected;
+    });
+    b.userFindings = findings;
+    b.inspected = true;
+
+    // Feedback de precisión
+    const correct = { fill: b.fill === 'ok' ? 'pass' : 'fail', label: b.label === 'ok' ? 'pass' : 'fail', cap: b.cap === 'ok' ? 'pass' : 'fail' };
+    const matches = ['fill','label','cap'].filter(k => findings[k] === correct[k]).length;
+    const rect = container.getBoundingClientRect();
+    const fWorld = worldToScreen(-4.5 + idx * 1.8, 2.5, 0);
+    const f = document.createElement('div');
+    f.className = 'floater';
+    f.textContent = matches === 3 ? '✓ Perfecto' : `${matches}/3 aciertos`;
+    f.style.color = matches === 3 ? '#27AE60' : '#E67E22';
+    f.style.left = fWorld.x + 'px';
+    f.style.top = fWorld.y + 'px';
+    container.appendChild(f);
+    setTimeout(() => f.remove(), 1500);
+
+    closeInspection();
+    renderClipboard();
+    renderMetrics();
+    updatePointerForStep();
+
+    const remaining = 6 - state.bottles.filter(x => x.inspected).length;
+    if (remaining === 0){
+      setHugui(`¡<strong>Las 6 botellas están inspeccionadas</strong>! Ahora vamos al siguiente paso: diagnosticar <strong>qué tipo de defecto es el más frecuente</strong>. Click en Continuar.`);
+    } else {
+      setHugui(`Botella #${idx+1} registrada. <strong>Faltan ${remaining}</strong> botellas. La flecha verde te indica cuál revisar.`);
+    }
+  });
+
+  function closeInspection(){
+    $('insp-modal').classList.remove('visible');
+    $('insp-overlay').classList.remove('visible');
+    state.currentBottleIdx = null;
+  }
+  $('insp-close').addEventListener('click', closeInspection);
+  $('insp-overlay').addEventListener('click', closeInspection);
+
+  // ── BTN NEXT ──
+  $('btn-next').addEventListener('click', () => {
+    if (state.step === 1 && state.bottles.every(b => b.inspected)){
+      setStep(2);
+      openDiagnostic();
+    } else if (state.step === 4 && state.phvaActed){
+      $('feedback-overlay').classList.add('visible');
+    }
+  });
+
+  // ── DIAGNÓSTICO (Pareto) ──
+  function openDiagnostic(){
+    const c = countDefects();
+    const totalDef = c.fill + c.label + c.cap;
+    const maxVal = Math.max(c.fill, c.label, c.cap, 1);
+    const chart = $('pareto-chart');
+    chart.innerHTML = '';
+    const data = [
+      { key:'fill',  label:'Llenado',    count:c.fill,  className:'llenado' },
+      { key:'label', label:'Etiquetado', count:c.label, className:'etiqueta' },
+      { key:'cap',   label:'Tapas',      count:c.cap,   className:'tapa' }
+    ].sort((a,b) => b.count - a.count);
+    data.forEach((d, idx) => {
+      const pct = totalDef > 0 ? Math.round((d.count / totalDef) * 100) : 0;
+      const bar = document.createElement('div');
+      bar.className = 'pareto-bar';
+      bar.dataset.key = d.key;
+      bar.dataset.idx = idx;
+      bar.innerHTML = `
+        <span class="bar-count-label">Defectos</span>
+        <span class="bar-count">${d.count}</span>
+        <div class="bar-fill ${d.className}" style="height:0"></div>
+        <span class="bar-label">${d.label}</span>
+        <span class="bar-pct">${pct}% del total</span>
+      `;
+      bar.addEventListener('click', () => onParetoBarClick(bar, d.key));
+      chart.appendChild(bar);
+      // Animar crecimiento con pequeño delay entre barras
+      setTimeout(() => {
+        bar.querySelector('.bar-fill').style.height = ((d.count / maxVal) * 150) + 'px';
+      }, 200 + idx * 150);
+    });
+    // Mostrar modal
+    $('diag-modal').classList.add('visible');
+    $('diag-overlay').classList.add('visible');
+    // Reset hint y continue
+    $('pareto-hint').classList.remove('visible');
+    $('diag-continue').style.display = 'none';
+    // Posicionar flecha sobre la barra más alta (primera tras sort)
+    setTimeout(positionParetoPointer, 800);
+    setHugui(`Aquí está el diagnóstico. Lee con calma las 3 secciones — <strong>qué estás viendo</strong>, <strong>el principio de Pareto</strong>, y <strong>tu tarea</strong>. Luego haz click en la barra más alta.`);
+  }
+
+  function positionParetoPointer(){
+    const chart = $('pareto-chart');
+    const pointer = $('pareto-pointer');
+    const tallest = chart.querySelector('.pareto-bar[data-idx="0"]');
+    if (!tallest || !pointer){ pointer.style.display='none'; return; }
+    const chartRect = chart.getBoundingClientRect();
+    const barRect = tallest.getBoundingClientRect();
+    const leftPx = (barRect.left + barRect.width/2) - chartRect.left + chart.offsetLeft;
+    pointer.style.left = leftPx + 'px';
+    pointer.style.display = 'block';
+  }
+
+  window.addEventListener('resize', () => {
+    if ($('diag-modal').classList.contains('visible')) positionParetoPointer();
+  });
+
+  function onParetoBarClick(bar, key){
+    const c = countDefects();
+    const correct = c.fill >= c.label && c.fill >= c.cap ? 'fill' : (c.label >= c.cap ? 'label' : 'cap');
+    document.querySelectorAll('.pareto-bar').forEach(b => b.classList.remove('correct','wrong'));
+    const hint = $('pareto-hint');
+    const labelMap = { fill:'Llenado', label:'Etiquetado', cap:'Tapas' };
+    if (key === correct){
+      bar.classList.add('correct');
+      $('pareto-pointer').style.display = 'none';
+      hint.innerHTML = `<strong>¡Exacto!</strong> <strong>${labelMap[key]}</strong> es el defecto más frecuente (${c[key]} de 6 botellas). Aplicando el principio de Pareto, atacar esta causa específica resolverá la mayor parte del problema. Listo para aplicar mejora continua.`;
+      hint.classList.add('visible');
+      $('diag-continue').style.display = 'block';
+      state.mainDefectIdentified = true;
+    } else {
+      bar.classList.add('wrong');
+      hint.innerHTML = `<strong>¡Buena observación de ${labelMap[key]}!</strong> Pero mira las alturas con atención: la flecha naranja te señala la barra más alta — ese es el defecto que aparece con más frecuencia. Pareto nos dice que ahí está el 80% del problema. Inténtalo de nuevo.`;
+      hint.classList.add('visible');
+    }
+  }
+
+  $('diag-continue').addEventListener('click', () => {
+    $('diag-modal').classList.remove('visible');
+    $('diag-overlay').classList.remove('visible');
+    setStep(3);
+    openPHVA();
+  });
+
+  // ── PHVA PANEL ──
+  function openPHVA(){
+    state.phvaStage = 0;
+    $('phva-modal').classList.add('visible');
+    $('phva-overlay').classList.add('visible');
+    renderPHVAStage();
+    setHugui(`Ahora aplicamos el <strong>ciclo PHVA</strong> (Planificar → Hacer → Verificar → Actuar). Avanza paso a paso. Es la esencia de la mejora continua.`);
+  }
+
+  function renderPHVAStage(){
+    // Actualizar visual del stepper PHVA
+    document.querySelectorAll('.phva-stage').forEach(el => {
+      const s = parseInt(el.dataset.s);
+      el.classList.toggle('active', s === state.phvaStage);
+      el.classList.toggle('done', s < state.phvaStage);
+    });
+    const body = $('phva-body');
+    const nextBtn = $('phva-next');
+    const prevBtn = $('phva-prev');
+    prevBtn.disabled = state.phvaStage === 0;
+
+    if (state.phvaStage === 0){
+      // PLANIFICAR
+      body.innerHTML = `
+        <h4>📋 P · Planificar</h4>
+        <p>Define una <strong>meta medible</strong> para el % de defectos. La tasa actual es <strong>${defectRate()}%</strong>. ¿Hasta dónde vas a bajarla?</p>
+        <div class="phva-slider-wrap">
+          <div class="phva-slider-label"><span>Meta de defectos</span><span class="phva-slider-value" id="slider-val">${state.phvaMeta}%</span></div>
+          <input type="range" class="phva-slider" id="phva-slider" min="5" max="30" value="${state.phvaMeta}">
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:#8b7340;font-weight:600"><span>5% (ambiciosa)</span><span>30% (conservadora)</span></div>
+        </div>
+      `;
+      $('phva-slider').addEventListener('input', (e) => {
+        state.phvaMeta = parseInt(e.target.value);
+        $('slider-val').textContent = state.phvaMeta + '%';
+      });
+      nextBtn.disabled = false;
+      nextBtn.textContent = 'Siguiente: Hacer →';
+    } else if (state.phvaStage === 1){
+      // HACER
+      body.innerHTML = `
+        <h4>🔧 H · Hacer</h4>
+        <p>Meta: bajar al <strong>${state.phvaMeta}%</strong>. Ahora elige <strong>una intervención</strong> para aplicar. Solo una — recuerda Pareto.</p>
+        <div class="phva-options" id="phva-opt-list"></div>
+      `;
+      const list = $('phva-opt-list');
+      INTERVENTIONS.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'phva-option' + (state.phvaIntervention === opt.id ? ' selected' : '');
+        btn.innerHTML = `<div class="phva-opt-icon">${opt.icon}</div><div class="phva-opt-body"><div class="phva-opt-name">${opt.name}</div><div class="phva-opt-desc">${opt.desc}</div></div>`;
+        btn.addEventListener('click', () => {
+          state.phvaIntervention = opt.id;
+          document.querySelectorAll('.phva-option').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          nextBtn.disabled = false;
+        });
+        list.appendChild(btn);
+      });
+      nextBtn.disabled = !state.phvaIntervention;
+      nextBtn.textContent = 'Siguiente: Verificar →';
+    } else if (state.phvaStage === 2){
+      // VERIFICAR
+      const intv = INTERVENTIONS.find(i => i.id === state.phvaIntervention);
+      const rateBefore = defectRate();
+      // Simulación: si interventó sobre el target correcto, reducir más
+      const mainDefect = 'fill'; // sabemos que es el principal
+      const rateAfter = intv.target === mainDefect ? Math.round(rateBefore * 0.2) : Math.round(rateBefore * 0.8);
+      const metaHit = rateAfter <= state.phvaMeta;
+      state.phvaVerified = true;
+      state.phvaLastResult = { rateBefore, rateAfter, metaHit, intv };
+      body.innerHTML = `
+        <h4>📊 V · Verificar</h4>
+        <p>Probamos <strong>${intv.name}</strong> en un nuevo lote y medimos. Comparamos contra la meta de <strong>${state.phvaMeta}%</strong>:</p>
+        <div class="phva-bars">
+          <div class="phva-compare">
+            <div class="phva-compare-label">Antes</div>
+            <div class="phva-compare-val" style="color:#E74C3C">${rateBefore}%</div>
+            <div class="phva-compare-bar" style="background:#E74C3C;height:${rateBefore*2}px"></div>
+          </div>
+          <div style="font-size:32px;color:#8b7340">→</div>
+          <div class="phva-compare">
+            <div class="phva-compare-label">Después</div>
+            <div class="phva-compare-val" style="color:${metaHit?'#27AE60':'#E67E22'}">${rateAfter}%</div>
+            <div class="phva-compare-bar" style="background:${metaHit?'#27AE60':'#E67E22'};height:${rateAfter*2}px"></div>
+          </div>
+          <div style="font-size:32px;color:#8b7340">vs</div>
+          <div class="phva-compare">
+            <div class="phva-compare-label">Meta</div>
+            <div class="phva-compare-val" style="color:#1E8449">${state.phvaMeta}%</div>
+            <div class="phva-compare-bar" style="background:#1E8449;height:${state.phvaMeta*2}px"></div>
+          </div>
+        </div>
+        <p class="phva-verify-note">${metaHit ? `<strong>¡Meta alcanzada!</strong> La intervención funcionó. Ahora falta el último paso — Actuar — para que esta mejora se mantenga.` : `No se alcanzó la meta (faltaron ${rateAfter - state.phvaMeta} puntos). En la vida real, volverías a planificar con una intervención distinta. Para este reto puedes continuar de todas formas.`}</p>
+      `;
+      nextBtn.disabled = false;
+      nextBtn.textContent = 'Siguiente: Actuar →';
+    } else if (state.phvaStage === 3){
+      // ACTUAR
+      const r = state.phvaLastResult;
+      body.innerHTML = `
+        <h4>✅ A · Actuar</h4>
+        <p>La mejora funcionó. Ahora debes <strong>estandarizarla</strong> para que todos los operarios y turnos futuros la apliquen por igual. Sin este paso, la mejora se pierde con el tiempo.</p>
+        <div style="background:rgba(39,174,96,.1);border:2px solid #27AE60;border-radius:8px;padding:14px;margin:12px 0">
+          <div style="font-weight:700;color:#1E8449;margin-bottom:6px">Acciones para estandarizar</div>
+          <ul style="list-style:none;padding:0;font-size:13px;line-height:1.8;color:#3a2a10">
+            <li>▸ Documentar el procedimiento nuevo</li>
+            <li>▸ Capacitar a todos los turnos</li>
+            <li>▸ Incluirlo en el checklist de arranque diario</li>
+            <li>▸ Medir mensualmente para confirmar que se sostiene</li>
+          </ul>
+        </div>
+      `;
+      nextBtn.textContent = '✅ Estandarizar la mejora';
+      nextBtn.disabled = false;
+    }
+  }
+
+  $('phva-next').addEventListener('click', () => {
+    if (state.phvaStage < 3){
+      state.phvaStage++;
+      renderPHVAStage();
+    } else {
+      // Actuar final
+      state.phvaActed = true;
+      $('phva-modal').classList.remove('visible');
+      $('phva-overlay').classList.remove('visible');
+      setStep(4);
+      setHugui(`¡<strong>Ciclo PHVA completo</strong>! Estandarizaste la mejora, así queda para todos los turnos. Una última pregunta sobre lo que acabas de hacer.`);
+      renderMetrics();
+      // Mini delay y abrimos modal final
+      setTimeout(() => {
+        $('feedback-overlay').classList.add('visible');
+        state.won = true;
+      }, 800);
+    }
+  });
+
+  $('phva-prev').addEventListener('click', () => {
+    if (state.phvaStage > 0){
+      state.phvaStage--;
+      renderPHVAStage();
+    }
+  });
+
+  // ── FEEDBACK MODAL ──
+  $('fb-options').addEventListener('click', (e) => {
+    const btn = e.target.closest('.fb-opt'); if (!btn || btn.disabled) return;
+    const correct = btn.dataset.correct === 'true', explain = btn.dataset.explain;
+    document.querySelectorAll('.fb-opt').forEach(b => {
+      b.disabled = true;
+      if (b.dataset.correct === 'true') b.classList.add('correct');
+    });
+    if (!correct) btn.classList.add('chosen-wrong');
+    const exp = $('fb-explanation');
+    exp.innerHTML = explain;
+    exp.classList.add('visible');
+    $('fb-continue').classList.add('visible');
+  });
+  $('fb-continue').addEventListener('click', () => {
+    window.location.href = 'reto_interactivo_3.html';
+  });
+
+  // ── RESET ──
+  $('btn-reset').addEventListener('click', () => {
+    location.reload();
+  });
+
+  // ── INIT ──
+  renderClipboard();
+  renderMetrics();
+  setStep(1);
+  setTimeout(() => $('observe-overlay').classList.add('visible'), 400);
+  setTimeout(() => updatePointerForStep(), 1200);
+  </script>
+
+</body>
+</html>
